@@ -1,6 +1,12 @@
-# quantum-computing
+# Quantum-Computing Notebooks
 
-The implementations on the notebooks are based in the following papers:
+- Miscellaneous notebooks:
+
+| Notebook | Summary |
+|:---------|:------|
+| [qiskit.ipynb](https://github.com/lhugens/quantum-computing/blob/main/qiskit.ipynb) | Basic qiskit workflow. |
+
+- Notebooks based on scientic papers:
 
 | Notebook | Paper |
 |:---------|:------|
