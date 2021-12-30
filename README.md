@@ -14,3 +14,6 @@
 |:---------|:------|
 | [standard_grover_algorithm.ipynb](https://github.com/lhugens/quantum-computing/blob/main/standard_grover_algorithm.ipynb) | [A fast quantum mechanical algorithm for database search](https://doi.org/10.1145/237814.237866) |
 | [amplitude_amplification_and_estimation.ipynb](https://github.com/lhugens/quantum-computing/blob/main/amplitude_amplification_and_estimation.ipynb) | [Quantum Amplitude Amplification and Estimation](https://arxiv.org/abs/quant-ph/0005055) |
+| [depth_optimization_grover.ipynb](https://github.com/lhugens/quantum-computing/blob/main/depth_optimization_grover.ipynb) | [Depth optimization of quantum search algorithms beyond Grover’s algorithm](https://arxiv.org/abs/1908.04171) |
+
+
