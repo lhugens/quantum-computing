@@ -1,0 +1,9189 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\begin_preamble
+\usepackage{indentfirst}
+\usepackage{mathtools}
+\usepackage{physics}
+\usepackage{braket}
+\usepackage{tikz}
+\usetikzlibrary{quantikz}
+
+\newcommand{\quadratic}{ax^2 + bx + c}
+\usepackage{subfigure}
+\end_preamble
+\use_default_options true
+\begin_modules
+theorems-ams
+theorems-chap
+\end_modules
+\maintain_unincluded_children false
+\language british
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement H
+\paperfontsize default
+\spacing double
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1cm
+\topmargin 2cm
+\rightmargin 1cm
+\bottommargin 2cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style british
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Notes on Quantum Computing Algorithms for Natural Language Processing
+\end_layout
+
+\begin_layout Author
+Leonardo Hügens
+\begin_inset Newline newline
+\end_inset
+
+l.lobatodiasleitehugens@students.uu.nl
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+newpage{}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+\begin_inset Quotes bld
+\end_inset
+
+Rigorous mathematicians and physicists
+\begin_inset Quotes brd
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+In this section it's shown how two possible different readings of a sentence
+ correspond to different contractions, based on the calculation taken from
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "adriana"
+literal "true"
+
+\end_inset
+
+.
+ The sentence is 
+\begin_inset Quotes bld
+\end_inset
+
+rigorous mathematicians and physicists.
+ The two interpretations are:
+\end_layout
+
+\begin_layout Itemize
+I - (rigorous mathematicians) and physicists
+\end_layout
+
+\begin_layout Itemize
+II - rigorous (mathematicians and physicists)
+\end_layout
+
+\begin_layout Standard
+We start with the representation of the two words in the semantic spaces
+ (using Einstein summation convention)
+\begin_inset Formula 
+\begin{align*}
+\llbracket\text{ rigorous }\rrbracket & =r_{ij}\hat{n}_{i}\otimes\hat{n}_{j}\\
+\llbracket\text{ mathematicians }\rrbracket & =m_{k}\hat{n}_{k}\\
+\llbracket\text{ and }\rrbracket & =a_{lmn}\hat{n}_{l}\otimes\hat{n}_{m}\otimes\hat{n}_{n}\\
+\llbracket\text{ physicists }\rrbracket & =p_{o}\hat{n}_{o}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Interpretation I:
+\begin_inset Formula 
+\begin{align*}
+ & \llbracket\text{ rigorous \text{ mathematicians }}\rrbracket.\llbracket\text{ and physicists}\rrbracket\\
+= & \left\{ \llbracket\text{ rigorous }\rrbracket.\llbracket\text{ mathematicians }\rrbracket\right\} .\left\{ \llbracket\text{ and }\rrbracket.\llbracket\text{ physicists }\rrbracket\right\} \\
+= & \left\{ \left(r_{ij}\hat{n}_{i}\otimes\hat{n}_{j}\right).\left(m_{k}\hat{n}_{k}\right)\right\} .\left\{ \left(a_{lmn}\hat{n}_{l}\otimes\hat{n}_{m}\otimes\hat{n}_{n}\right).\left(p_{o}\hat{n}_{o}\right)\right\} \\
+= & \left\{ r_{ij}m_{k}\hat{n}_{i}\delta_{jk}\right\} .\left\{ a_{lmn}p_{o}\hat{n}_{l}\otimes\hat{n}_{m}\delta_{no}\right\} \\
+= & \left\{ r_{ij}m_{j}\hat{n}_{i}\right\} .\left\{ a_{lmn}p_{n}\hat{n}_{l}\otimes\hat{n}_{m}\right\} \\
+= & r_{ij}m_{j}a_{lmn}p_{n}\delta_{il}\hat{n}_{m}\\
+= & r_{ij}m_{j}a_{imn}p_{n}\hat{n}_{m}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Interpretation II:
+\begin_inset Formula 
+\begin{align*}
+ & \llbracket\text{ rigorous }\rrbracket.\llbracket\text{ mathematicians and physicists}\rrbracket\\
+= & \llbracket\text{ rigorous }\rrbracket.\left\{ \llbracket\text{ mathematicians }\rrbracket.\left\{ \llbracket\text{ and }\rrbracket.\llbracket\text{ physicists }\rrbracket\right\} \right\} \\
+= & \left\{ r_{ij}\hat{n}_{i}\otimes\hat{n}_{j}\right\} .\left\{ \left(m_{k}\hat{n}_{k}\right).\left(a_{lmn}p_{n}\hat{n}_{l}\otimes\hat{n}_{m}\right)\right\} \\
+= & \left\{ r_{ij}\hat{n}_{i}\otimes\hat{n}_{j}\right\} .\left\{ m_{k}a_{lmn}p_{n}\delta_{kl}\hat{n}_{m}\right\} \\
+= & \left\{ r_{ij}\hat{n}_{i}\otimes\hat{n}_{j}\right\} .\left\{ m_{l}a_{lmn}p_{n}\hat{n}_{m}\right\} \\
+= & r_{ij}m_{l}a_{lmn}p_{n}\hat{n}_{i}\delta_{jm}\\
+= & r_{ij}m_{l}a_{ljn}p_{n}\hat{n}_{i}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Quantum Tomography of 1 qubit states 
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:tomography"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Any 1 qubit state can be written in the form
+\begin_inset Formula 
+\[
+\left\vert \psi\right\rangle =e^{i\gamma}\left(\cos\left(\frac{\theta}{2}\right)\left\vert 0\right\rangle +\sin\left(\frac{\theta}{2}\right)e^{i\phi}\left\vert 1\right\rangle \right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It is intuitive to see that having 3 free parameters makes sense, since
+ we have 4 parameters (real and complex parts of each of the 2 coefficients)
+ but we also have the constraint of the state being normalized, which 
+\begin_inset Formula $\left|\alpha\right|^{2}+\left|\beta\right|^{2}=1$
+\end_inset
+
+ for a general case 
+\begin_inset Formula $\left\vert \psi\right\rangle =\alpha\left\vert 0\right\rangle +\beta\left\vert 1\right\rangle $
+\end_inset
+
+.
+ However, the global phase should be completely irrelevant for any procedure,
+ so now we'll show 3 tests that can be applied to a quantum state, provided
+ that we can prepare a system in that state as many times as we want, and
+ that enable us to determine 
+\begin_inset Formula $\theta$
+\end_inset
+
+ and 
+\begin_inset Formula $\phi$
+\end_inset
+
+ to obtain:
+\begin_inset Formula 
+\[
+\left\vert \psi\right\rangle =\cos\left(\frac{\theta}{2}\right)\left\vert 0\right\rangle +\sin\left(\frac{\theta}{2}\right)e^{i\phi}\left\vert 1\right\rangle 
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The intervals for each angle are 
+\begin_inset Formula $\theta\in\left[0,\pi\right]$
+\end_inset
+
+ and 
+\begin_inset Formula $\phi\in[-\pi,\pi)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Test 1 - determine 
+\begin_inset Formula $\theta$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The circuit for this test is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+	 
+\backslash
+lstick{$
+\backslash
+ket{
+\backslash
+psi}$} & 
+\backslash
+meter{} 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We know that the probabilities of measuring 0 and 1 (
+\begin_inset Formula $P_{0}$
+\end_inset
+
+ and 
+\begin_inset Formula $P_{1}$
+\end_inset
+
+) are:
+\begin_inset Formula 
+\begin{align*}
+P_{0} & =\cos^{2}\left(\frac{\theta}{2}\right)\\
+P_{1} & =\sin^{2}\left(\frac{\theta}{2}\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+which gives us 
+\begin_inset Formula $\frac{\theta}{2}\in\left[0,\frac{\pi}{2}\right]$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+\theta=2\arccos\left(\sqrt{P_{0}}\right)=2\arcsin\left(\sqrt{P_{1}}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If this experiments give 
+\begin_inset Formula $\theta=0$
+\end_inset
+
+ or 
+\begin_inset Formula $\theta=\pi$
+\end_inset
+
+, we'll already know 
+\begin_inset Formula $\left\vert \psi\right\rangle =\left\vert 1\right\rangle $
+\end_inset
+
+ or 
+\begin_inset Formula $\left\vert \psi\right\rangle =\left\vert 0\right\rangle $
+\end_inset
+
+ respectively, so in that case we skip the next tests.
+\end_layout
+
+\begin_layout Subsection
+Test 2 - determine 
+\begin_inset Formula $\left|\phi\right|$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The circuit for this test is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{quantikz}[slice all]
+\end_layout
+
+\begin_layout Plain Layout
+
+	 
+\backslash
+lstick{$
+\backslash
+ket{
+\backslash
+psi}$} & 
+\backslash
+gate{H} & 
+\backslash
+meter{} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The final state is:
+\begin_inset Formula 
+\begin{align*}
+\left\vert \psi_{1}\right\rangle  & =H\left[\cos\left(\frac{\theta}{2}\right)\left\vert 0\right\rangle +\sin\left(\frac{\theta}{2}\right)e^{i\phi}\left\vert 1\right\rangle \right]\\
+ & =\cos\left(\frac{\theta}{2}\right)\frac{\left\vert 0\right\rangle +\left\vert 1\right\rangle }{\sqrt{2}}+\sin\left(\frac{\theta}{2}\right)e^{i\phi}\frac{\left\vert 0\right\rangle -\left\vert 1\right\rangle }{\sqrt{2}}\\
+ & =\frac{1}{\sqrt{2}}\left[\cos\left(\frac{\theta}{2}\right)+\sin\left(\frac{\theta}{2}\right)e^{i\phi}\right]\left\vert 0\right\rangle +\frac{1}{\sqrt{2}}\left[\cos\left(\frac{\theta}{2}\right)-\sin\left(\frac{\theta}{2}\right)e^{i\phi}\right]\left\vert 1\right\rangle 
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+which implies:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+P_{0} & =\frac{1}{2}\left|\cos\left(\frac{\theta}{2}\right)+\sin\left(\frac{\theta}{2}\right)e^{i\phi}\right|^{2} & P_{1} & =\frac{1}{2}\left|\cos\left(\frac{\theta}{2}\right)-\sin\left(\frac{\theta}{2}\right)e^{i\phi}\right|^{2}\\
+ & =\frac{1}{2}\left[\cos\left(\frac{\theta}{2}\right)+\sin\left(\frac{\theta}{2}\right)e^{i\phi}\right]\left[\cos\left(\frac{\theta}{2}\right)+\sin\left(\frac{\theta}{2}\right)e^{-i\phi}\right] &  & =\frac{1}{2}\left[\cos\left(\frac{\theta}{2}\right)-\sin\left(\frac{\theta}{2}\right)e^{i\phi}\right]\left[\cos\left(\frac{\theta}{2}\right)-\sin\left(\frac{\theta}{2}\right)e^{-i\phi}\right]\\
+ & =\frac{1}{2}\left[1+\cos\left(\frac{\theta}{2}\right)\sin\left(\frac{\theta}{2}\right)\left(e^{i\phi}+e^{-i\phi}\right)\right] &  & =\frac{1}{2}\left[1-\cos\left(\frac{\theta}{2}\right)\sin\left(\frac{\theta}{2}\right)\left(e^{i\phi}+e^{-i\phi}\right)\right]\\
+ & =\frac{1}{2}\left[1+\sin\left(\theta\right)\cos\left(\phi\right)\right] &  & =\frac{1}{2}\left[1-\sin\left(\theta\right)\cos\left(\phi\right)\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We can manipulate this as
+\begin_inset Formula 
+\begin{align*}
+P_{0}-P_{1} & =\sin\left(\theta\right)\cos\left(\phi\right)\\
+\cos\left(\phi\right) & =\frac{P_{0}-P_{1}}{\sin\left(\theta\right)}\\
+\phi & =\pm\arccos\left(\frac{P_{0}-P_{1}}{\sin\left(\theta\right)}\right)\\
+\left|\phi\right| & =\left|\arccos\left(\frac{P_{0}-P_{1}}{\sin\left(\theta\right)}\right)\right|
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Test 3 - determine 
+\begin_inset Formula $sign\left(\phi\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{quantikz}[slice all]
+\end_layout
+
+\begin_layout Plain Layout
+
+	 
+\backslash
+lstick{$
+\backslash
+ket{
+\backslash
+psi}$} & 
+\backslash
+gate{S^
+\backslash
+dagger} & 
+\backslash
+gate{H} & 
+\backslash
+meter{} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The intermediate and final states are:
+\begin_inset Formula 
+\begin{align*}
+\left\vert \psi_{1}\right\rangle  & =S^{\dagger}\left[\cos\left(\frac{\theta}{2}\right)\left\vert 0\right\rangle +\sin\left(\frac{\theta}{2}\right)e^{i\phi}\left\vert 1\right\rangle \right]\\
+ & =\cos\left(\frac{\theta}{2}\right)\left\vert 0\right\rangle -i\sin\left(\frac{\theta}{2}\right)e^{i\phi}\left\vert 1\right\rangle 
+\end{align*}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\left\vert \psi_{2}\right\rangle  & =H\left[\cos\left(\frac{\theta}{2}\right)\left\vert 0\right\rangle -i\sin\left(\frac{\theta}{2}\right)e^{i\phi}\left\vert 1\right\rangle \right]\\
+ & =\cos\left(\frac{\theta}{2}\right)\frac{\left\vert 0\right\rangle +\left\vert 1\right\rangle }{\sqrt{2}}-i\sin\left(\frac{\theta}{2}\right)e^{i\phi}\frac{\left\vert 0\right\rangle -\left\vert 1\right\rangle }{\sqrt{2}}\\
+ & =\frac{1}{\sqrt{2}}\left[\cos\left(\frac{\theta}{2}\right)-i\sin\left(\frac{\theta}{2}\right)e^{i\phi}\right]\left\vert 0\right\rangle +\frac{1}{\sqrt{2}}\left[\cos\left(\frac{\theta}{2}\right)+i\sin\left(\frac{\theta}{2}\right)e^{i\phi}\right]\left\vert 1\right\rangle 
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The probabilities are
+\begin_inset Formula 
+\begin{align*}
+P_{0} & =\frac{1}{2}\left|\cos\left(\frac{\theta}{2}\right)-i\sin\left(\frac{\theta}{2}\right)e^{i\phi}\right|^{2} & P_{1} & =\frac{1}{2}\left|\cos\left(\frac{\theta}{2}\right)+i\sin\left(\frac{\theta}{2}\right)e^{i\phi}\right|^{2}\\
+ & =\frac{1}{2}\left[\cos\left(\frac{\theta}{2}\right)-i\sin\left(\frac{\theta}{2}\right)e^{i\phi}\right]\left[\cos\left(\frac{\theta}{2}\right)+i\sin\left(\frac{\theta}{2}\right)e^{-i\phi}\right] &  & =\frac{1}{2}\left[\cos\left(\frac{\theta}{2}\right)+i\sin\left(\frac{\theta}{2}\right)e^{i\phi}\right]\left[\cos\left(\frac{\theta}{2}\right)-i\sin\left(\frac{\theta}{2}\right)e^{-i\phi}\right]\\
+ & =\frac{1}{2}\left[1-\cos\left(\frac{\theta}{2}\right)\sin\left(\frac{\theta}{2}\right)\left(ie^{i\phi}-ie^{-i\phi}\right)\right] &  & =\frac{1}{2}\left[1+\cos\left(\frac{\theta}{2}\right)\sin\left(\frac{\theta}{2}\right)\left(ie^{i\phi}-ie^{-i\phi}\right)\right]\\
+ & =\frac{1}{2}\left[1+\sin\left(\theta\right)\sin\left(\phi\right)\right] &  & =\frac{1}{2}\left[1-\sin\left(\theta\right)\sin\left(\phi\right)\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+which can be combined to give
+\begin_inset Formula 
+\begin{align*}
+P_{0}-P_{1} & =\sin\left(\theta\right)\sin\left(\phi\right)\\
+\sin\left(\phi\right) & =\frac{P_{0}-P_{1}}{\sin\left(\theta\right)}\\
+sign\left(\phi\right) & =sign\left(\arcsin\left(\frac{P_{0}-P_{1}}{\sin\left(\theta\right)}\right)\right)\\
+sign\left(\phi\right) & =sign\left(P_{0}-P_{1}\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where we used that the range of usual principal value or arcsin is 
+\begin_inset Formula $\left[-\frac{\pi}{2},\frac{\pi}{2}\right]$
+\end_inset
+
+ and 
+\begin_inset Formula $\sin\left(\theta\right)>0\,\,\forall\theta\in\left(0,\pi\right)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+Expected value 
+\begin_inset Formula $\left\langle \psi\right\vert U\left\vert \psi\right\rangle $
+\end_inset
+
+ - Hadamard test
+\end_layout
+
+\begin_layout Standard
+In this section I'll show how to measure the expected value of any unitary
+ operator 
+\begin_inset Formula $U$
+\end_inset
+
+ on the state 
+\begin_inset Formula $\left\vert \psi\right\rangle $
+\end_inset
+
+.
+ This can be made through the Hadamard test, whose circuit is, where we
+ can the first qubit in the state 
+\begin_inset Formula $\left\vert 0\right\rangle $
+\end_inset
+
+ the control qubit:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{quantikz}[slice all]
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick{$
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate{H} & 
+\backslash
+ctrl{1} & 
+\backslash
+gate{H} & 
+\backslash
+meter{} 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick{$
+\backslash
+ket{
+\backslash
+psi}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 	 
+\backslash
+qw & 
+\backslash
+gate{U} &      
+\backslash
+qw &      
+\backslash
+qw 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The states along the circuit are:
+\begin_inset Formula 
+\begin{align*}
+\left\vert \psi_{0}\right\rangle  & =\left\vert 0\right\rangle \otimes\left\vert \psi\right\rangle \\
+\left\vert \psi_{1}\right\rangle  & =\frac{\left\vert 0\right\rangle +\left\vert 1\right\rangle }{\sqrt{2}}\otimes\left\vert \psi\right\rangle \\
+\left\vert \psi_{2}\right\rangle  & =\frac{1}{\sqrt{2}}\left\vert 0\right\rangle \otimes\left\vert \psi\right\rangle +\frac{1}{\sqrt{2}}\left\vert 1\right\rangle \otimes U\left\vert \psi\right\rangle \\
+\left\vert \psi_{3}\right\rangle  & =\frac{\left\vert 0\right\rangle +\left\vert 1\right\rangle }{2}\otimes\left\vert \psi\right\rangle +\frac{\left\vert 0\right\rangle -\left\vert 1\right\rangle }{2}\otimes U\left\vert \psi\right\rangle \\
+ & =\left\vert 0\right\rangle \otimes\frac{1}{2}\left(\mathbb{I}+U\right)\left\vert \psi\right\rangle +\left\vert 1\right\rangle \otimes\frac{1}{2}\left(\mathbb{I}-U\right)\left\vert \psi\right\rangle 
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+So the probabilities of measuring 0 or 1 of the control bit in the first
+ wire are:
+\begin_inset Formula 
+\begin{align*}
+P_{0} & =\frac{1}{4}\left\langle \psi\right\vert \left(\mathbb{I}+U^{\dagger}\right)\left(\mathbb{I}+U\right)\left\vert \psi\right\rangle \\
+P_{1} & =\frac{1}{4}\left\langle \psi\right\vert \left(\mathbb{I}-U^{\dagger}\right)\left(\mathbb{I}-U\right)\left\vert \psi\right\rangle 
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+which we can manipulate to find
+\begin_inset Formula 
+\begin{align*}
+P_{0}-P_{1} & =\frac{1}{4}\left\langle \psi\right\vert \left[\left(\mathbb{I}+U^{\dagger}\right)\left(\mathbb{I}+U\right)-\left(\mathbb{I}-U^{\dagger}\right)\left(\mathbb{I}-U\right)\right]\left\vert \psi\right\rangle \\
+ & =\frac{1}{4}\left\langle \psi\right\vert \left[\mathbb{I}+U^{\dagger}+U+U^{\dagger}U-\left(\mathbb{I}-U^{\dagger}-U+U^{\dagger}U\right)\right]\left\vert \psi\right\rangle \\
+ & =\frac{1}{2}\left\langle \psi\right\vert \left(U^{\dagger}+U\right)\left\vert \psi\right\rangle \\
+ & =\Re\left[\left\langle \psi\right\vert U\left\vert \psi\right\rangle \right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Similarly, we can determine the imaginary part of the expectation value
+ (e.g.
+ for the case that 
+\begin_inset Formula $U$
+\end_inset
+
+ is not hermitian), by applying the same procedure to the circuit:
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick{$
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate{H} & 
+\backslash
+gate{S^
+\backslash
+dagger} & 
+\backslash
+ctrl{1} & 
+\backslash
+gate{H} & 
+\backslash
+meter{} 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick{$
+\backslash
+ket{
+\backslash
+psi}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 	 
+\backslash
+qw &              
+\backslash
+qw & 
+\backslash
+gate{U} &      
+\backslash
+qw &      
+\backslash
+qw 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This time we'll have that the imaginary part of the expectation value if
+ the difference of probabilities of measuring the control bit and it being
+ 0 or 1:
+\begin_inset Formula 
+\[
+P_{0}-P_{1}=\Im\left[\left\langle \psi\right\vert U\left\vert \psi\right\rangle \right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Attempt at contraction: measuring 
+\begin_inset Formula $\left\langle \psi\right\vert \hat{P}\left\vert \psi\right\rangle $
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Motivation
+\end_layout
+
+\begin_layout Standard
+Let's consider the most simple example of a contraction: the 3-qubit contraction
+ 
+\begin_inset Formula $\left\vert \psi\right\rangle =a_{i}b_{jk}\left\vert ijk\right\rangle \rightarrow a_{i}b_{ik}\left\vert k\right\rangle $
+\end_inset
+
+, whose initial configuration in a quantum computer would be:
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$a_{i}
+\backslash
+ket{i}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate[wires=2]{P} 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=2]{$b_{jk}
+\backslash
+ket{jk}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+qw & 
+\backslash
+qw   
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Let's consider the calculation of the expectation value of the permutation
+ operator 
+\begin_inset Formula $P_{01}$
+\end_inset
+
+, as indicated in the circuit.
+ We write the subscript 
+\begin_inset Formula $_{01}$
+\end_inset
+
+ to indicate that it is the permutation operator between the first two wires,
+ with indices 
+\begin_inset Formula $0$
+\end_inset
+
+ and 
+\begin_inset Formula $1$
+\end_inset
+
+ (for convenience when implementing code).
+\begin_inset Formula 
+\begin{align*}
+ & \left\langle \psi\right\vert \hat{P}_{01}\otimes O_{2}\left\vert \psi\right\rangle \\
+= & a_{i'}^{\star}b_{j'k'}^{\star}\left\langle i'j'k'\right\vert \left(\hat{P}_{01}\otimes O_{2}\right)\left\vert ijk\right\rangle a_{i}b_{jk}\\
+= & a_{i'}^{\star}b_{j'k'}^{\star}\left\langle i'j'k'\right\vert O_{2}\left\vert jik\right\rangle a_{i}b_{jk}\\
+= & a_{i'}^{\star}b_{j'k'}^{\star}\left\langle i'j'\vert ji\right\rangle \left\langle k'\right\vert O_{2}\left\vert k\right\rangle a_{i}b_{jk}\\
+= & a_{i'}^{\star}b_{j'k'}^{\star}\delta_{i'j}\delta_{j'i}\left\langle k'\right\vert O_{2}\left\vert k\right\rangle a_{i}b_{jk}\\
+= & a_{j}^{\star}b_{ik'}^{\star}\left\langle k'\right\vert O_{2}\left\vert k\right\rangle a_{i}b_{jk}\\
+= & \left[a_{i}b_{ik'}^{\star}\left\langle k'\right\vert \right]O_{2}\left[a_{j}^{\star}b_{jk}\left\vert k\right\rangle \right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We see that the state that 
+\begin_inset Quotes bld
+\end_inset
+
+appears
+\begin_inset Quotes brd
+\end_inset
+
+ to be left in the last qubit is 
+\begin_inset Formula $a_{j}^{\star}b_{jk}\left\vert k\right\rangle $
+\end_inset
+
+, which we can compare to the contracted state that we desired 
+\begin_inset Formula $a_{j}b_{jk}\left\vert k\right\rangle $
+\end_inset
+
+, that they only differ by the complex conjugation of one of the tensors.
+ Just as quick note, these two states we mentioned (conjugation or not)
+ have different probabilities of being measured:
+\begin_inset Formula 
+\begin{align*}
+\left|a_{j}b_{jk}\right|^{2} & =\left[a_{j}b_{jk}\right]\left[a_{j'}^{\star}b_{j'k}^{\star}\right]=a_{j}b_{jk}a_{j'}^{\star}b_{j'k}^{\star}\\
+\left|a_{j}^{\star}b_{jk}\right|^{2} & =\left[a_{j}^{\star}b_{jk}\right]\left[a_{j'}b_{j'k}^{\star}\right]=a_{j}^{\star}b_{jk}a_{j'}b_{j'k}^{\star}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Thus, it may seem that measuring this expected value would leave the last
+ bit the pure state 
+\begin_inset Formula $a_{j}^{\star}b_{jk}\left\vert k\right\rangle $
+\end_inset
+
+, but this is an artifact of the expected value calculation, which is not
+ equivalent to actually performing the expected value calculation in a quantum
+ circuit, as we shall see in the next sections.
+\end_layout
+
+\begin_layout Subsection
+Hadamard Test
+\end_layout
+
+\begin_layout Standard
+As we saw in a previous section, we can use the Hadamard test to determine
+ the expectation value 
+\begin_inset Formula $\left\langle \psi\right\vert \hat{P}_{01}\left\vert \psi\right\rangle $
+\end_inset
+
+, and because this operator is hermitian we have 
+\begin_inset Formula $\left\langle \psi\right\vert \hat{P}_{01}\left\vert \psi\right\rangle =\Re\left[\left\langle \psi\right\vert \hat{P}_{01}\left\vert \psi\right\rangle \right]$
+\end_inset
+
+, so we only need the following circuit:
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{quantikz}[slice all]
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick{$
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate{H} & 
+\backslash
+ctrl{2} & 
+\backslash
+gate{H} & 
+\backslash
+meter{} 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick{$a_{i}
+\backslash
+ket{i}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 	 
+\backslash
+qw & 
+\backslash
+swap{1} &      
+\backslash
+qw &    
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=2]{$b_{jk}
+\backslash
+ket{jk}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw & 
+\backslash
+targX{} &      
+\backslash
+qw &    
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &    
+\backslash
+qw
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The states along the circuit are:
+\begin_inset Formula 
+\begin{align*}
+\left\vert \psi_{0}\right\rangle  & =\left\vert 0\right\rangle \otimes a_{i}\left\vert i\right\rangle \otimes b_{jk}\left\vert jk\right\rangle \\
+\left\vert \psi_{1}\right\rangle  & =\frac{\left\vert 0\right\rangle +\left\vert 1\right\rangle }{\sqrt{2}}\otimes a_{i}\left\vert i\right\rangle \otimes b_{jk}\left\vert jk\right\rangle \\
+\left\vert \psi_{2}\right\rangle  & =\frac{1}{\sqrt{2}}\left\vert 0\right\rangle \otimes a_{i}b_{jk}\left\vert ijk\right\rangle +\frac{1}{\sqrt{2}}\left\vert 1\right\rangle \otimes a_{i}b_{jk}\left\vert jik\right\rangle \\
+\left\vert \psi_{3}\right\rangle  & =\frac{\left\vert 0\right\rangle +\left\vert 1\right\rangle }{2}\otimes a_{i}b_{jk}\left\vert ijk\right\rangle +\frac{\left\vert 0\right\rangle -\left\vert 1\right\rangle }{2}\otimes a_{j}b_{ik}\left\vert ijk\right\rangle \\
+ & =\left\vert 0\right\rangle \otimes\left[\frac{1}{2}\left(a_{i}b_{jk}+a_{j}b_{ik}\right)\left\vert ijk\right\rangle \right]+\left\vert 1\right\rangle \otimes\left[\frac{1}{2}\left(a_{i}b_{jk}-a_{j}b_{ik}\right)\left\vert ijk\right\rangle \right]\\
+ & =\left\vert 0\right\rangle \otimes a_{(i}b_{j)k}\left\vert ijk\right\rangle +\left\vert 1\right\rangle \otimes a_{[i}b_{j]k}\left\vert ijk\right\rangle 
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The 
+\begin_inset Formula $a_{(i}b_{j)k}$
+\end_inset
+
+ and 
+\begin_inset Formula $a_{[i}b_{j]k}$
+\end_inset
+
+ denote the symmetric and antisymmetric parts of the tensor 
+\begin_inset Formula $a_{i}b_{jk}$
+\end_inset
+
+, respectively, w.r.t the indices 
+\begin_inset Formula $i$
+\end_inset
+
+ and 
+\begin_inset Formula $j$
+\end_inset
+
+.
+ We can see that the last qubit was not left in a pure state, contrary to
+ what we desire.
+ Moreover, there is no combination of 
+\begin_inset Formula $i$
+\end_inset
+
+, 
+\begin_inset Formula $j$
+\end_inset
+
+ values and control qubit value s.t.
+ that component would be our desired state (e.g.
+ 
+\begin_inset Formula $\left\vert 0\right\rangle \otimes a_{i}b_{ik}\left\vert 00k\right\rangle $
+\end_inset
+
+ would be such a state, but it's not on 
+\begin_inset Formula $\left\vert \psi_{3}\right\rangle $
+\end_inset
+
+).
+ This circuit still allows us to determine 
+\begin_inset Formula $\left\langle \psi\right\vert \hat{P}_{01}\left\vert \psi\right\rangle $
+\end_inset
+
+ of course, through the probabilities of the control qubit 
+\begin_inset Formula $P_{0}$
+\end_inset
+
+ and 
+\begin_inset Formula $P_{1}$
+\end_inset
+
+, it just does not leave the last qubit in the pure state that we want,
+ to allow for further processing of that state.
+\end_layout
+
+\begin_layout Subsection
+Bell Basis Test
+\end_layout
+
+\begin_layout Standard
+In this section I'll show how to determine 
+\begin_inset Formula $\left\langle \psi\right\vert \hat{P}_{01}\left\vert \psi\right\rangle $
+\end_inset
+
+ through a basis transformation into the Bell basis 
+\begin_inset Formula $\left\vert \beta_{ij}\right\rangle $
+\end_inset
+
+.
+ The relationship between the canonical basis 
+\begin_inset Formula $\left\vert ij\right\rangle $
+\end_inset
+
+ and the Bell states (a.k.a.
+ EPR pairs) 
+\begin_inset Formula $\left\vert \beta_{ij}\right\rangle $
+\end_inset
+
+ is:
+\begin_inset Formula 
+\begin{align*}
+\left\vert \beta_{00}\right\rangle  & =\frac{1}{\sqrt{2}}\left(\left\vert 00\right\rangle +\left\vert 11\right\rangle \right) & \left\vert 00\right\rangle  & =\frac{1}{\sqrt{2}}\left(\left\vert \beta_{00}\right\rangle +\left\vert \beta_{10}\right\rangle \right)\\
+\left\vert \beta_{01}\right\rangle  & =\frac{1}{\sqrt{2}}\left(\left\vert 01\right\rangle +\left\vert 10\right\rangle \right) & \left\vert 01\right\rangle  & =\frac{1}{\sqrt{2}}\left(\left\vert \beta_{01}\right\rangle +\left\vert \beta_{11}\right\rangle \right)\\
+\left\vert \beta_{10}\right\rangle  & =\frac{1}{\sqrt{2}}\left(\left\vert 00\right\rangle -\left\vert 11\right\rangle \right) & \left\vert 10\right\rangle  & =\frac{1}{\sqrt{2}}\left(\left\vert \beta_{01}\right\rangle -\left\vert \beta_{11}\right\rangle \right)\\
+\left\vert \beta_{11}\right\rangle  & =\frac{1}{\sqrt{2}}\left(\left\vert 01\right\rangle -\left\vert 10\right\rangle \right) & \left\vert 11\right\rangle  & =\frac{1}{\sqrt{2}}\left(\left\vert \beta_{00}\right\rangle -\left\vert \beta_{10}\right\rangle \right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The circuit that performs the inverse Bell transformation, i.e.
+ in allows us to measure a states in the Bell basis, is represented bellow:
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{quantikz}[slice all]
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=2]{$t_{ij}
+\backslash
+ket{ij}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+ctrl{1} & 
+\backslash
+gate{H} & 
+\backslash
+meter{} 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate{X} &      
+\backslash
+qw & 
+\backslash
+meter{} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The states along the circuit are:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\left\vert \psi_{0}\right\rangle  & =t_{ij}\left\vert \beta_{ij}\right\rangle \\
+ & =t_{0j}\left\vert \beta_{0j}\right\rangle +t_{1j}\left\vert \beta_{1j}\right\rangle \\
+ & =\frac{t_{0j}}{\sqrt{2}}\left(\left\vert 0j\right\rangle +\left\vert 1\bar{j}\right\rangle \right)+\frac{t_{1j}}{\sqrt{2}}\left(\left\vert 0j\right\rangle -\left\vert 1\bar{j}\right\rangle \right)\\
+\left\vert \psi_{1}\right\rangle  & =\frac{t_{0j}}{\sqrt{2}}\left(\left\vert 0j\right\rangle +\left\vert 1j\right\rangle \right)+\frac{t_{1j}}{\sqrt{2}}\left(\left\vert 0j\right\rangle -\left\vert 1j\right\rangle \right)\\
+ & =\frac{1}{\sqrt{2}}\left(t_{0j}+t_{1j}\right)\left\vert 0j\right\rangle +\frac{1}{\sqrt{2}}\left(t_{0j}-t_{1j}\right)\left\vert 1j\right\rangle \\
+\left\vert \psi_{2}\right\rangle  & =\frac{1}{2}\left(t_{0j}+t_{1j}\right)\left(\left\vert 0j\right\rangle +\left\vert 1j\right\rangle \right)+\frac{1}{2}\left(t_{0j}-t_{1j}\right)\left(\left\vert 0j\right\rangle -\left\vert 1j\right\rangle \right)\\
+ & =t_{0j}\left\vert 0j\right\rangle +t_{1j}\left\vert 1j\right\rangle \\
+ & =t_{ij}\left\vert ij\right\rangle 
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For example, if initially in the beginning of the circuit we had 
+\begin_inset Formula $\left\vert \beta_{ij}\right\rangle $
+\end_inset
+
+ then we would measure the state 
+\begin_inset Formula $\left\vert ij\right\rangle $
+\end_inset
+
+ in the end.
+ Thus, we could think of this circuit as being inside a usual measurement
+ symbol in the circuit, but a measurement in the Bell basis.
+ 
+\end_layout
+
+\begin_layout Standard
+To measure 
+\begin_inset Formula $\left\langle \psi\right\vert \hat{P}_{01}\left\vert \psi\right\rangle $
+\end_inset
+
+, we would just need to prepare 
+\begin_inset Formula $\left\vert \psi\right\rangle =a_{ij}\left\vert ij\right\rangle $
+\end_inset
+
+ and send it through the circuit, and the expected value would be determine
+ from measures as follows:
+\begin_inset Formula 
+\begin{align*}
+\left\vert \psi\right\rangle  & =\left\langle \beta_{00}\vert\psi\right\rangle \left\vert \beta_{00}\right\rangle +\left\langle \beta_{01}\vert\psi\right\rangle \left\vert \beta_{01}\right\rangle +\left\langle \beta_{10}\vert\psi\right\rangle \left\vert \beta_{10}\right\rangle +\left\langle \beta_{11}\vert\psi\right\rangle \left\vert \beta_{11}\right\rangle \\
+\hat{P}_{01}\left\vert \psi\right\rangle  & =\left\langle \beta_{00}\vert\psi\right\rangle \left\vert \beta_{00}\right\rangle +\left\langle \beta_{01}\vert\psi\right\rangle \left\vert \beta_{01}\right\rangle +\left\langle \beta_{10}\vert\psi\right\rangle \left\vert \beta_{10}\right\rangle -\left\langle \beta_{11}\vert\psi\right\rangle \left\vert \beta_{11}\right\rangle \\
+\left\langle \psi\right\vert \hat{P}_{01}\left\vert \psi\right\rangle  & =\left|\left\langle \beta_{00}\vert\psi\right\rangle \right|^{2}+\left|\left\langle \beta_{01}\vert\psi\right\rangle \right|^{2}+\left|\left\langle \beta_{10}\vert\psi\right\rangle \right|^{2}-\left|\left\langle \beta_{11}\vert\psi\right\rangle \right|^{2}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+which in more practical terms is 
+\begin_inset Formula 
+\[
+\left\langle \psi\right\vert \hat{P}_{01}\left\vert \psi\right\rangle =P_{00}+P_{01}+P_{10}-P_{11}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $P_{ij}$
+\end_inset
+
+ denotes the probability of measuring 
+\begin_inset Formula $\left\vert ij\right\rangle $
+\end_inset
+
+ (careful not to mix with the operator 
+\begin_inset Formula $\hat{P}_{ij}$
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Standard
+Thus, we know now how to measure the expectation value 
+\begin_inset Formula $\left\langle \psi\right\vert \hat{P}_{01}\left\vert \psi\right\rangle $
+\end_inset
+
+, by performing an inverse Bell transformation.
+ However, we'll see now that this circuit does not in general leave the
+ last qubit in the pure state that we want.
+ The circuit is 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{quantikz}[slice all]
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$a_{i}
+\backslash
+ket{i}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+ctrl{1} & 
+\backslash
+gate{H} & 
+\backslash
+meter{} 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=2]{$b_{jk}
+\backslash
+ket{jk}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate{X} &      
+\backslash
+qw & 
+\backslash
+meter{} 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+qw 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The states along the circuit are:
+\begin_inset Formula 
+\begin{align*}
+\left\vert \psi_{0}\right\rangle  & =a_{i}b_{jk}\left\vert ijk\right\rangle \\
+ & =\left[a_{0}\left\vert 0\right\rangle +a_{1}\left\vert 1\right\rangle \right]\otimes b_{jk}\left\vert jk\right\rangle 
+\end{align*}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\left\vert \psi_{1}\right\rangle  & =a_{0}\left\vert 0\right\rangle \otimes b_{jk}\left\vert jk\right\rangle +a_{1}\left\vert 1\right\rangle \otimes b_{jk}\left\vert \bar{j}k\right\rangle \\
+ & =a_{0}\left\vert 0\right\rangle \otimes b_{jk}\left\vert jk\right\rangle +a_{1}\left\vert 1\right\rangle \otimes b_{\bar{j}k}\left\vert jk\right\rangle 
+\end{align*}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\left\vert \psi_{2}\right\rangle  & =a_{0}H\left\vert 0\right\rangle \otimes b_{jk}\left\vert jk\right\rangle +a_{1}H\left\vert 1\right\rangle \otimes b_{\bar{j}k}\left\vert jk\right\rangle \\
+ & =a_{0}\frac{\left\vert 0\right\rangle +\left\vert 1\right\rangle }{\sqrt{2}}\otimes b_{jk}\left\vert jk\right\rangle +a_{1}\frac{\left\vert 0\right\rangle -\left\vert 1\right\rangle }{\sqrt{2}}\otimes b_{\bar{j}k}\left\vert jk\right\rangle \\
+ & =\frac{1}{\sqrt{2}}\left[\left(a_{0}b_{jk}+a_{1}b_{\bar{j}k}\right)\left\vert 0jk\right\rangle \right]+\frac{1}{\sqrt{2}}\left[\left(a_{0}b_{jk}-a_{1}b_{\bar{j}k}\right)\left\vert 1jk\right\rangle \right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This final state 
+\begin_inset Formula $\left\vert \psi_{2}\right\rangle $
+\end_inset
+
+ cannot be written in the form 
+\begin_inset Formula $\left\vert \psi\right\rangle =\left(\text{any 2 qubit state}\right)\otimes\left(a_{i}b_{ik}\left\vert k\right\rangle \right)$
+\end_inset
+
+.
+ Thus, both the Hadamard Test and the Inverse Bell Test allow us to measure
+ the expected value of the permutation operator, but don't leave the last
+ qubit in the desired contracted pure state as we hoped from our analytical
+ calculation of that expectation value.
+ In the next section we'll see another way in which we can use the Inverse
+ Bell transformation circuit to force the last qubit to be in our desired
+ pure state by measuring the other qubits.
+\end_layout
+
+\begin_layout Section
+Contraction method: Projection on 
+\begin_inset Formula $\left\vert \beta_{00}\right\rangle $
+\end_inset
+
+.
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:contraction"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We are looking for a method to perform the contraction 
+\begin_inset Formula $a_{i}b_{jk}\left\vert ijk\right\rangle \rightarrow a_{i}b_{ik}\left\vert k\right\rangle $
+\end_inset
+
+ on a quantum computer.
+ Since in practice we cannot simply 
+\begin_inset Quotes bld
+\end_inset
+
+get rid off
+\begin_inset Quotes brd
+\end_inset
+
+ two qubits (
+\begin_inset Formula $i$
+\end_inset
+
+ and 
+\begin_inset Formula $j$
+\end_inset
+
+), the perfect method would perform unitary operations on the initial (not
+ yet contracted) state 
+\begin_inset Formula $\left\vert \psi\right\rangle =a_{i}b_{jk}\left\vert ijk\right\rangle $
+\end_inset
+
+ such that the final state could be written in the form.
+\begin_inset Formula 
+\[
+\left\vert \psi\right\rangle =\left(\text{any 2 qubit state}\right)\otimes\left(a_{i}b_{ik}\left\vert k\right\rangle \right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Technically if we found such method, it would mean we found a general method
+ to disentangle a previously entangled qubit from the rest of the qubits,
+ which according to 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "disentanglers"
+literal "true"
+
+\end_inset
+
+ seems to be very difficult to do with certainty.
+\end_layout
+
+\begin_layout Standard
+A method by which it is possible leave the qubit we want a pure state is
+ by measuring all the other qubits.
+ Thus, if we find an algorithm that generates a final state 
+\begin_inset Formula $\left\vert \psi\right\rangle =a_{s}b_{sk}\left\vert ijk\right\rangle $
+\end_inset
+
+ for some pair 
+\begin_inset Formula $i,j$
+\end_inset
+
+, then we would know that our wanted qubit is in our wanted contracted state
+ if we measured the first 2 qubits to have values 
+\begin_inset Formula $i$
+\end_inset
+
+ and 
+\begin_inset Formula $j$
+\end_inset
+
+.
+ Turn out that one such algorithm is the one that changes the basis to the
+ bell states.
+ 
+\end_layout
+
+\begin_layout Subsection
+3-qubit example
+\end_layout
+
+\begin_layout Standard
+The circuit that will perform the contraction as we've specified it is 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{quantikz}[slice all]
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$a_{i}
+\backslash
+ket{i}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+ctrl{1} & 
+\backslash
+gate{H} & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=2]{$b_{jk}
+\backslash
+ket{jk}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate{X} &      
+\backslash
+qw & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+qw 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The states along the circuit are:
+\begin_inset Formula 
+\begin{align*}
+\left\vert \psi_{0}\right\rangle  & =a_{i}b_{jk}\left\vert ijk\right\rangle \\
+ & =\left[a_{0}\left\vert 0\right\rangle +a_{1}\left\vert 1\right\rangle \right]\otimes b_{jk}\left\vert jk\right\rangle 
+\end{align*}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\left\vert \psi_{1}\right\rangle  & =a_{0}\left\vert 0\right\rangle \otimes b_{jk}\left\vert jk\right\rangle +a_{1}\left\vert 1\right\rangle \otimes b_{jk}\left\vert \bar{j}k\right\rangle \\
+ & =a_{0}\left\vert 0\right\rangle \otimes b_{jk}\left\vert jk\right\rangle +a_{1}\left\vert 1\right\rangle \otimes b_{\bar{j}k}\left\vert jk\right\rangle 
+\end{align*}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\left\vert \psi_{2}\right\rangle  & =a_{0}H\left\vert 0\right\rangle \otimes b_{jk}\left\vert jk\right\rangle +a_{1}H\left\vert 1\right\rangle \otimes b_{\bar{j}k}\left\vert jk\right\rangle \\
+ & =a_{0}\frac{\left\vert 0\right\rangle +\left\vert 1\right\rangle }{\sqrt{2}}\otimes b_{jk}\left\vert jk\right\rangle +a_{1}\frac{\left\vert 0\right\rangle -\left\vert 1\right\rangle }{\sqrt{2}}\otimes b_{\bar{j}k}\left\vert jk\right\rangle \\
+ & =\frac{1}{\sqrt{2}}\left[\left(a_{0}b_{jk}+a_{1}b_{\bar{j}k}\right)\left\vert 0jk\right\rangle \right]+\frac{1}{\sqrt{2}}\left[\left(a_{0}b_{jk}-a_{1}b_{\bar{j}k}\right)\left\vert 1jk\right\rangle \right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We see that the component with 
+\begin_inset Formula $i=j=0$
+\end_inset
+
+ is:
+\begin_inset Formula 
+\[
+\frac{1}{\sqrt{2}}\left(a_{0}b_{0k}+a_{1}b_{1k}\right)\left\vert 00k\right\rangle 
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and the contraction we wanted was 
+\begin_inset Formula $a_{i}b_{ik}\left\vert k\right\rangle =\left(a_{0}b_{0k}+a_{1}b_{1k}\right)\left\vert k\right\rangle $
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+5-qubit example
+\end_layout
+
+\begin_layout Standard
+In this case, the contraction we hope to perform is 
+\begin_inset Formula $a_{ij}b_{klm}\left\vert ijklm\right\rangle \rightarrow a_{ij}b_{jim}\left\vert m\right\rangle $
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{quantikz}[slice all]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+lstick[wires=2]{$a_{ij}
+\backslash
+ket{ij}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+ctrl{3} & 
+\backslash
+gate{H} & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+ctrl{1} & 
+\backslash
+gate{H} &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+lstick[wires=3]{$b_{klm}
+\backslash
+ket{klm}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate{X} &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw &  
+\backslash
+gate{X} &     
+\backslash
+qw & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw &       
+\backslash
+qw &     
+\backslash
+qw & 
+\backslash
+qw  
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The states along the circuit are:
+\begin_inset Formula 
+\begin{align*}
+\left\vert \psi_{0}\right\rangle  & =a_{ij}b_{klm}\left\vert ijklm\right\rangle \\
+ & =\left(a_{i0}\left\vert i0\right\rangle +a_{i1}\left\vert i1\right\rangle \right)\otimes b_{klm}\left\vert klm\right\rangle 
+\end{align*}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\left\vert \psi_{1}\right\rangle  & =a_{i0}\left\vert i0\right\rangle \otimes b_{klm}\left\vert klm\right\rangle +a_{i1}\left\vert i1\right\rangle \otimes b_{klm}\left\vert \bar{k}lm\right\rangle \\
+ & =a_{i0}\left\vert i0\right\rangle \otimes b_{klm}\left\vert klm\right\rangle +a_{i1}\left\vert i1\right\rangle \otimes b_{\bar{k}lm}\left\vert klm\right\rangle 
+\end{align*}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\left\vert \psi_{2}\right\rangle  & =a_{i0}\frac{\left\vert i0\right\rangle +\left\vert i1\right\rangle }{\sqrt{2}}\otimes b_{klm}\left\vert klm\right\rangle +a_{i1}\frac{\left\vert i0\right\rangle -\left\vert i1\right\rangle }{\sqrt{2}}\otimes b_{\bar{k}lm}\left\vert klm\right\rangle \\
+ & =\frac{1}{\sqrt{2}}\left(a_{i0}b_{klm}+a_{i1}b_{\bar{k}lm}\right)\left\vert i0klm\right\rangle +\frac{1}{\sqrt{2}}\left(a_{i0}b_{klm}-a_{i1}b_{\bar{k}lm}\right)\left\vert i1klm\right\rangle 
+\end{align*}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\left\vert \psi_{3}\right\rangle  & =\frac{1}{\sqrt{2}}\left(a_{00}b_{klm}+a_{01}b_{\bar{k}lm}\right)\left\vert 00klm\right\rangle +\frac{1}{\sqrt{2}}\left(a_{00}b_{klm}-a_{01}b_{\bar{k}lm}\right)\left\vert 01klm\right\rangle \\
+ & +\frac{1}{\sqrt{2}}\left(a_{10}b_{k\bar{l}m}+a_{11}b_{\bar{k}\bar{l}m}\right)\left\vert 10klm\right\rangle +\frac{1}{\sqrt{2}}\left(a_{10}b_{k\bar{l}m}-a_{11}b_{\bar{k}\bar{l}m}\right)\left\vert 11klm\right\rangle 
+\end{align*}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\left\vert \psi_{4}\right\rangle  & =\frac{1}{\sqrt{2}}\left(a_{00}b_{klm}+a_{01}b_{\bar{k}lm}\right)\frac{\left\vert 0\right\rangle +\left\vert 1\right\rangle }{\sqrt{2}}\otimes\left\vert 0klm\right\rangle \\
+ & +\frac{1}{\sqrt{2}}\left(a_{00}b_{klm}-a_{01}b_{\bar{k}lm}\right)\frac{\left\vert 0\right\rangle +\left\vert 1\right\rangle }{\sqrt{2}}\otimes\left\vert 1klm\right\rangle \\
+ & +\frac{1}{\sqrt{2}}\left(a_{10}b_{k\bar{l}m}+a_{11}b_{\bar{k}\bar{l}m}\right)\frac{\left\vert 0\right\rangle -\left\vert 1\right\rangle }{\sqrt{2}}\otimes\left\vert 0klm\right\rangle \\
+ & +\frac{1}{\sqrt{2}}\left(a_{10}b_{k\bar{l}m}-a_{11}b_{\bar{k}\bar{l}m}\right)\frac{\left\vert 0\right\rangle -\left\vert 1\right\rangle }{\sqrt{2}}\otimes\left\vert 1klm\right\rangle 
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The component of 
+\begin_inset Formula $\left\vert \psi_{4}\right\rangle $
+\end_inset
+
+ that has 
+\begin_inset Formula $i=j=k=l=0$
+\end_inset
+
+ is:
+\begin_inset Formula 
+\begin{align*}
+ & \frac{1}{2}\left(a_{00}b_{00m}+a_{01}b_{10m}+a_{10}b_{01m}+a_{11}b_{11m}\right)\left\vert 0000m\right\rangle \\
+= & \frac{1}{2}a_{ij}b_{jim}\left\vert m\right\rangle 
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Thus, up to the factor multiplicative 
+\begin_inset Formula $\frac{1}{2}$
+\end_inset
+
+, we have the contracted state we wanted on the last qubit given that we
+ measured all others to be 
+\begin_inset Formula $\left\vert 0\right\rangle $
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+3-qubit test
+\end_layout
+
+\begin_layout Standard
+In this section I make clear how to test in the simulator/quantum computer
+ if the state in the left over qubit is in fact the contracted state that
+ we desire.
+\end_layout
+
+\begin_layout Subsubsection*
+Generate analytical result
+\end_layout
+
+\begin_layout Standard
+First of all, because I want to test it in any general 
+\begin_inset Formula $a_{i}$
+\end_inset
+
+ and 
+\begin_inset Formula $b_{jk}$
+\end_inset
+
+ tensors, I want to have the freedom of doing it without thinking consciously
+ about things like normalization.
+ Thus, I take this procedure:
+\end_layout
+
+\begin_layout Itemize
+Choose any complex-valued tensors 
+\begin_inset Formula $A_{i}$
+\end_inset
+
+ and 
+\begin_inset Formula $B_{j}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Normalize each of them 
+\begin_inset Formula $A_{i}\rightarrow a_{i\,\,}\,\,B_{jk}\rightarrow b_{jk}$
+\end_inset
+
+, such that the states 
+\begin_inset Formula $a_{i}\left\vert i\right\rangle $
+\end_inset
+
+ and 
+\begin_inset Formula $b_{jk}\left\vert jk\right\rangle $
+\end_inset
+
+ are both normalized.
+\end_layout
+
+\begin_layout Itemize
+Contract the normalized tensors to obtain the (not necessarily normalized)
+ wanted contraction:
+\begin_inset Formula 
+\[
+\left\vert \psi_{\text{wanted}}\right\rangle =a_{s}b_{sk}\left\vert k\right\rangle 
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Multiply by the appropriate factor (seems to be 
+\begin_inset Formula $\left(\frac{1}{\sqrt{2}}\right)^{n}$
+\end_inset
+
+ where 
+\begin_inset Formula $n$
+\end_inset
+
+ is the number of contractions:
+\begin_inset Formula 
+\[
+\left\vert \psi_{\text{component}}\right\rangle =\frac{1}{\sqrt{2}}a_{s}b_{sk}\left\vert k\right\rangle 
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Rotate it such that it is in the (let's call it canonical) form 
+\begin_inset Formula $\cos\left(\frac{\theta}{2}\right)\left\vert 0\right\rangle +\sin\left(\frac{\theta}{2}\right)e^{i\phi}$
+\end_inset
+
+, i.e., the first coefficient is real:
+\begin_inset Formula 
+\[
+\left\vert \psi_{\text{component canonical}}\right\rangle =\frac{1}{\sqrt{2}}a'_{s}b'_{sk}\left\vert k\right\rangle 
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Just to make it clear here, the way to put any general state 
+\begin_inset Formula 
+\[
+\left|\alpha\right|e^{i\theta_{\alpha}}\left\vert 0\right\rangle +\left|\beta\right|e^{i\theta_{\beta}}\left\vert 1\right\rangle 
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+in the canonical form is to multiply it by 
+\begin_inset Formula $e^{-i\theta_{\alpha}}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection*
+Simulator result
+\end_layout
+
+\begin_layout Standard
+To test if the last qubit is in the pure state (the normalized version of)
+ 
+\begin_inset Formula $a_{s}b_{sk}\left\vert k\right\rangle $
+\end_inset
+
+, we need to implement the 3 tests mentioned in the earlier section, namely
+ we'll send the following circuits to qiskit:
+\end_layout
+
+\begin_layout Standard
+Test 1:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$a_{i}
+\backslash
+ket{i}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+ctrl{1} & 
+\backslash
+gate{H} & 
+\backslash
+qw & 
+\backslash
+qw & 
+\backslash
+qw & 
+\backslash
+qw & 
+\backslash
+meter{} 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=2]{$b_{jk}
+\backslash
+ket{jk}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate{X} &      
+\backslash
+qw & 
+\backslash
+qw & 
+\backslash
+qw & 
+\backslash
+qw & 
+\backslash
+qw & 
+\backslash
+meter{} 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+qw & 
+\backslash
+qw & 
+\backslash
+qw & 
+\backslash
+qw & 
+\backslash
+meter{} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Test 2:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$a_{i}
+\backslash
+ket{i}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+ctrl{1} & 
+\backslash
+gate{H} &      
+\backslash
+qw & 
+\backslash
+qw & 
+\backslash
+qw & 
+\backslash
+meter{} 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=2]{$b_{jk}
+\backslash
+ket{jk}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate{X} &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+qw & 
+\backslash
+qw & 
+\backslash
+meter{} 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+gate{H} & 
+\backslash
+qw & 
+\backslash
+qw & 
+\backslash
+meter{}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Test 3:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$a_{i}
+\backslash
+ket{i}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+ctrl{1} & 
+\backslash
+gate{H} &              
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+meter{} 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=2]{$b_{jk}
+\backslash
+ket{jk}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate{X} &      
+\backslash
+qw &              
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+meter{} 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+gate{S^
+\backslash
+dagger} & 
+\backslash
+gate{H} & 
+\backslash
+meter{}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In each test, a dictionary of the following form is generated:
+\begin_inset Formula 
+\[
+\left\{ \left\vert 000\right\rangle \,:\,C_{000}\,;\,\left\vert 001\right\rangle \,:\,C_{001}\,;\,\dots\right\} ,
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $C_{ijk}$
+\end_inset
+
+ is the number of measures of the state
+\begin_inset Formula $\left\vert ijk\right\rangle $
+\end_inset
+
+.
+ We first build the probabilities dictionary of just the last qubit, i.e.:
+\begin_inset Formula 
+\[
+\left\{ \left\vert 0\right\rangle \,:\,\frac{C_{000}}{C_{000}+C_{001}}\,;\,\left\vert 1\right\rangle \,:\,\frac{C_{001}}{C_{000}+C_{001}}\right\} 
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+With these probabilities, we reconstruct a normalized canonical state of
+ the form
+\begin_inset Formula 
+\[
+\left\vert \psi\right\rangle =\cos\left(\frac{\theta}{2}\right)\left\vert 0\right\rangle +\sin\left(\frac{\theta}{2}\right)e^{i\phi}\left\vert 1\right\rangle 
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and we need to correct it's norm to the norm of the actual component of
+ the overall 3-qubit state, which is
+\begin_inset Formula 
+\[
+\left\vert \psi_{\text{component canonical}}\right\rangle =\sqrt{\frac{C_{000}+C_{001}}{\sum_{ijk}C_{ijk}}}\left[\cos\left(\frac{\theta}{2}\right)\left\vert 0\right\rangle +\sin\left(\frac{\theta}{2}\right)e^{i\phi}\left\vert 1\right\rangle \right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Ambiguous readings on Bob Coeck method
+\end_layout
+
+\begin_layout Subsection
+Using swap gates to generate different contraction
+\end_layout
+
+\begin_layout Standard
+Let's consider the phrase 
+\begin_inset Quotes bld
+\end_inset
+
+rigorous mathematicians and physicists
+\begin_inset Quotes brd
+\end_inset
+
+ from the first section.
+ The relevant circuit for interpretation I (only the mathematicians are
+ necessarily rigorous) using the Boeb Coeck method is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=2]{$r_{ij}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+ctrl{3} & 
+\backslash
+gate{H} & 
+\backslash
+meter{} 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+ctrl{1} & 
+\backslash
+gate{H} &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+meter{} 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$m_{k}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate{X} &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+meter{} 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=3]{$a_{lmn}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+gate{X} &      
+\backslash
+qw & 
+\backslash
+meter{} 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+ctrl{1} & 
+\backslash
+gate{H} &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+meter{} 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$p_{o}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate{X} &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+meter{} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The contraction we obtain with the Bob Coeck method is:
+\begin_inset Formula 
+\[
+\left\vert \psi_{\text{component}}\right\rangle =\frac{1}{2\sqrt{2}}r_{\nu\mu}m_{\mu}a_{\nu m\lambda}p_{\lambda}\left\vert m\right\rangle 
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Let's show that we can use two swap gates to generate Interpretation II.
+ The swap gate acts in exactly the same way as the permutation operator:
+ 
+\begin_inset Formula $\hat{P}_{01}\left[t_{ijk}\left\vert ijk\right\rangle \right]=t_{ijk}\left\vert jik\right\rangle =t_{jik}\left\vert ijk\right\rangle $
+\end_inset
+
+, as we can see, where we decompose the 2-qubit swap gate in terms of more
+ fundamental gates:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{quantikz}[slice all]
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=3]{$t_{ijk}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+ctrl{1} &  
+\backslash
+gate{X} & 
+\backslash
+ctrl{1} & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate{X} & 
+\backslash
+ctrl{-1} & 
+\backslash
+gate{X} & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &       
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+qw 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The states along the circuit are:
+\begin_inset Formula 
+\begin{align*}
+\left\vert \psi_{0}\right\rangle  & =t_{ijk}\left\vert ijk\right\rangle \\
+ & =t_{00k}\left\vert 00k\right\rangle +t_{01k}\left\vert 01k\right\rangle +t_{10k}\left\vert 10k\right\rangle +t_{11k}\left\vert 11k\right\rangle \\
+\left\vert \psi_{1}\right\rangle  & =t_{00k}\left\vert 00k\right\rangle +t_{01k}\left\vert 01k\right\rangle +t_{10k}\left\vert 11k\right\rangle +t_{11k}\left\vert 10k\right\rangle \\
+\left\vert \psi_{2}\right\rangle  & =t_{00k}\left\vert 00k\right\rangle +t_{01k}\left\vert 11k\right\rangle +t_{10k}\left\vert 01k\right\rangle +t_{11k}\left\vert 10k\right\rangle \\
+\left\vert \psi_{3}\right\rangle  & =t_{00k}\left\vert 00k\right\rangle +t_{01k}\left\vert 10k\right\rangle +t_{10k}\left\vert 01k\right\rangle +t_{11k}\left\vert 11k\right\rangle \\
+ & =t_{ijk}\left\vert jik\right\rangle \\
+ & =t_{jik}\left\vert ijk\right\rangle 
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Thus, the action of a swap gate can be expressed by either swapping the
+ indices in the ket or in the coefficients.
+\end_layout
+
+\begin_layout Standard
+The circuit that generates interpretation II is:
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=2]{$r_{ij}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw & 
+\backslash
+swap{4} &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+ctrl{3} & 
+\backslash
+gate{H} & 
+\backslash
+meter{} 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+ctrl{1} & 
+\backslash
+gate{H} &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+meter{} 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$m_{k}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+swap{2} &      
+\backslash
+qw & 
+\backslash
+gate{X} &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+meter{} 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=3]{$a_{lmn}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+gate{X} &      
+\backslash
+qw & 
+\backslash
+meter{} 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+targX{} & 
+\backslash
+targX{} &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+ctrl{1} & 
+\backslash
+gate{H} &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+meter{} 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$p_{o}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+gate{X} &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+meter{} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Thus, this circuit first does the following:
+\begin_inset Formula 
+\begin{align*}
+\left\vert \psi_{0}\right\rangle  & =r_{ij}m_{k}a_{lmn}p_{o}\left\vert ijklmno\right\rangle \\
+\left\vert \psi_{1}\right\rangle  & =r_{ij}m_{m}a_{lkn}p_{o}\left\vert ijklmno\right\rangle \\
+\left\vert \psi_{2}\right\rangle  & =r_{mj}m_{i}a_{lkn}p_{o}\left\vert ijklmno\right\rangle 
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and then the contraction proceeds normally, contracting 
+\begin_inset Formula $\left(j,k\right),\left(i,l\right),\left(n,o\right)$
+\end_inset
+
+, resulting in
+\begin_inset Formula 
+\[
+\left\vert \psi_{\text{component}}\right\rangle =\frac{1}{2\sqrt{2}}r_{m\mu}m_{\nu}a_{\nu\mu\lambda}p_{\lambda}\left\vert m\right\rangle 
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+which comparing to 
+\begin_inset Formula $r_{ij}m_{l}a_{ljn}p_{n}\hat{n}_{i}$
+\end_inset
+
+ is the same contraction.
+\end_layout
+
+\begin_layout Subsection
+Using control bit to put different readings in superposition
+\end_layout
+
+\begin_layout Standard
+We can use a control bit in the 
+\begin_inset Formula $\left\vert +\right\rangle =\frac{\left\vert 0\right\rangle +\left\vert 1\right\rangle }{\sqrt{2}}$
+\end_inset
+
+ state to put different readings in superposition.
+ Let's show this by first considering the general 3-qubit example below.
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate{H} & 
+\backslash
+ctrl{3}
+\backslash
+slice{2} &      
+\backslash
+qw &     		  
+\backslash
+qw & 
+\backslash
+meter{} 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$A_{i}
+\backslash
+ket{i}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &  		     
+\backslash
+qw & 
+\backslash
+ctrl{1} & 
+\backslash
+gate{H}
+\backslash
+slice{4} & 
+\backslash
+meter{} 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=2]{$B_{jk}
+\backslash
+ket{jk}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &		  
+\backslash
+swap{1} & 
+\backslash
+gate{X} &   		    
+\backslash
+qw & 
+\backslash
+meter{} 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw & 		 
+\backslash
+targX{} &      
+\backslash
+qw &   		    
+\backslash
+qw & 	 
+\backslash
+qw 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The states along the circuit are:
+\begin_inset Formula 
+\begin{align*}
+\left\vert \psi_{0}\right\rangle  & =\left\vert 0\right\rangle \otimes A_{i}B_{jk}\left\vert ijk\right\rangle \\
+\left\vert \psi_{2}\right\rangle  & =\left\vert 0\right\rangle \otimes\frac{1}{\sqrt{2}}A_{i}B_{jk}\left\vert ijk\right\rangle +\left\vert 1\right\rangle \otimes\frac{1}{\sqrt{2}}A_{i}B_{kj}\left\vert ijk\right\rangle \\
+\left\vert \psi_{4}\right\rangle  & =\underbrace{\left\vert 0\right\rangle }_{\text{control qubit = 0}}\otimes\frac{1}{2}\underbrace{A_{\mu}B_{\mu k}\left\vert 00k\right\rangle }_{\text{reading I}}+\underbrace{\left\vert 1\right\rangle }_{\text{control qubit = 1}}\otimes\frac{1}{2}\underbrace{A_{\mu}B_{k\mu}\left\vert 00k\right\rangle }_{\text{reading II}}+\dots
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Testing this method on a quantum computer simulator, we obtain the results
+ represented in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:readings-sim"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename /home/hugens/shared/uni/project/qnlp/notebooks/figures/simulator_backup.png
+	lyxscale 10
+	width 80text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:readings-sim"
+
+\end_inset
+
+Results of the superposition method in a quantum computer simulator.
+ In this simulation, 
+\begin_inset Formula $N=8192$
+\end_inset
+
+ shots were performed for each of the 3 tests mentioned in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:tomography"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Performing the exact same procedure on an actual quantum computer, with
+ the same amount of shots, we obtain the results represented in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:readings-ibm"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename /home/hugens/shared/uni/project/qnlp/notebooks/figures/ibm_backup.png
+	lyxscale 10
+	width 80text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:readings-ibm"
+
+\end_inset
+
+Results of the superposition method in a quantum computer.
+ In this procedure, 
+\begin_inset Formula $N=8192$
+\end_inset
+
+ shots were performed for each of the 3 tests mentioned in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:tomography"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+What if we have a more complicated case, like the expression 
+\emph on
+
+\begin_inset Quotes bld
+\end_inset
+
+rigorous mathematicians and physicists
+\begin_inset Quotes brd
+\end_inset
+
+
+\emph default
+? Even if it's not the case, one can imagine that the type complexity of
+ this expression is high enough to generate more than 2 different valid
+ readings, and in that case what would be the proper procedure to put them
+ in superposition?
+\emph on
+ 
+\emph default
+The circuit that performs just one of the valid readings.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate{H} & 
+\backslash
+ctrl{5} & 
+\backslash
+ctrl{5}
+\backslash
+slice{3} &      
+\backslash
+qw &               
+\backslash
+qw &      
+\backslash
+qw &               
+\backslash
+qw &      
+\backslash
+qw &               
+\backslash
+qw & 
+\backslash
+meter{} 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=2]{$R_{ij}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+swap{4} 		 &      
+\backslash
+qw &               
+\backslash
+qw & 
+\backslash
+ctrl{3} & 
+\backslash
+gate{H}
+\backslash
+slice{7} &      
+\backslash
+qw &               
+\backslash
+qw & 
+\backslash
+meter{} 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw &               
+\backslash
+qw & 
+\backslash
+ctrl{1} & 
+\backslash
+gate{H}
+\backslash
+slice{5} &      
+\backslash
+qw &               
+\backslash
+qw &      
+\backslash
+qw &               
+\backslash
+qw & 
+\backslash
+meter{} 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$M_{k}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw & 
+\backslash
+swap{2} &               
+\backslash
+qw & 
+\backslash
+gate{X} &               
+\backslash
+qw &      
+\backslash
+qw &               
+\backslash
+qw &      
+\backslash
+qw &               
+\backslash
+qw & 
+\backslash
+meter{} 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=3]{$A_{lmn}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw &                
+\backslash
+qw &      
+\backslash
+qw &              
+\backslash
+qw & 
+\backslash
+gate{X} &               
+\backslash
+qw &      
+\backslash
+qw &               
+\backslash
+qw & 
+\backslash
+meter{} 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw & 
+\backslash
+targX{} &           
+\backslash
+targX{} &      
+\backslash
+qw &              
+\backslash
+qw &      
+\backslash
+qw &               
+\backslash
+qw &      
+\backslash
+qw &               
+\backslash
+qw &      
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw &                
+\backslash
+qw &      
+\backslash
+qw &              
+\backslash
+qw &      
+\backslash
+qw &               
+\backslash
+qw & 
+\backslash
+ctrl{1} & 
+\backslash
+gate{H}
+\backslash
+slice{9} & 
+\backslash
+meter{} 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$P_{o}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw &                
+\backslash
+qw &      
+\backslash
+qw &              
+\backslash
+qw &      
+\backslash
+qw &               
+\backslash
+qw & 
+\backslash
+gate{X} &               
+\backslash
+qw & 
+\backslash
+meter{} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The states along the circuit are:
+\begin_inset Formula 
+\begin{align*}
+\left\vert \psi_{0}\right\rangle  & =R_{ij}M_{k}A_{lmn}P_{o}\left\vert 0ijklmno\right\rangle \\
+\left\vert \psi_{3}\right\rangle  & =\frac{1}{\sqrt{2}}R_{ij}M_{k}A_{lmn}P_{o}\left\vert 0ijklmno\right\rangle +\frac{1}{\sqrt{2}}R_{mj}M_{i}A_{lkn}P_{o}\left\vert 1ijklmno\right\rangle \\
+\left\vert \psi_{5}\right\rangle  & =\frac{1}{2}R_{i\mu}M_{\mu}A_{lmn}P_{o}\left\vert 0i00lmno\right\rangle +\frac{1}{2}R_{m\mu}M_{i}A_{l\mu n}P_{o}\left\vert 1i00lmno\right\rangle +\dots\\
+\left\vert \psi_{7}\right\rangle  & =\frac{1}{2\sqrt{2}}R_{\nu\mu}M_{\mu}A_{\nu mn}P_{o}\left\vert 00000mno\right\rangle +\frac{1}{2\sqrt{2}}R_{m\mu}M_{\nu}A_{\nu\mu n}P_{o}\left\vert 10000mno\right\rangle +\dots\\
+\left\vert \psi_{9}\right\rangle  & =\underbrace{\left\vert 0\right\rangle }_{\text{control qubit = 0}}\otimes\frac{1}{4}\underbrace{R_{\nu\mu}M_{\mu}A_{\nu m\lambda}P_{\lambda}\left\vert 0000m00\right\rangle }_{\text{Interpretation I}}+\underbrace{\left\vert 1\right\rangle }_{\text{control qubit = 1}}\otimes\frac{1}{4}\underbrace{R_{m\mu}M_{\nu}A_{\nu\mu\lambda}P_{\lambda}\left\vert 0000m00\right\rangle }_{\text{Interpretation II}}+\dots
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For more than two readings, one idea would be to add more control bits,
+ as in the following circuit:
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{quantikz}	
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate{H} & 
+\backslash
+octrl{1} & 
+\backslash
+octrl{1} & 
+\backslash
+octrl{1} &  
+\backslash
+ctrl{1} & 
+\backslash
+ctrl{1} & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate{H} & 
+\backslash
+octrl{5} & 
+\backslash
+octrl{5} &  
+\backslash
+ctrl{3} & 
+\backslash
+octrl{3} & 
+\backslash
+ctrl{3} & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=2]{$R_{ij}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &       
+\backslash
+qw &  
+\backslash
+swap{3} &  	 
+\backslash
+qw &  	 
+\backslash
+qw &  	
+\backslash
+qw & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &       
+\backslash
+qw &       
+\backslash
+qw &  
+\backslash
+swap{2} &  
+\backslash
+swap{3} & 
+\backslash
+swap{4} & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$M_{k}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &  
+\backslash
+swap{2} &       
+\backslash
+qw &  	 
+\backslash
+qw &   	
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=3]{$A_{lmn}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &       
+\backslash
+qw &       
+\backslash
+qw &  
+\backslash
+targX{} &   	
+\backslash
+qw &   	
+\backslash
+qw & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &  
+\backslash
+targX{} &  
+\backslash
+targX{} &  	 
+\backslash
+qw &  
+\backslash
+targX{} &   	
+\backslash
+qw & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &       
+\backslash
+qw &       
+\backslash
+qw & 	  
+\backslash
+qw & 	  
+\backslash
+qw &  
+\backslash
+targX{} & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$P_{o}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 	    
+\backslash
+qw & 	   
+\backslash
+qw & 	 
+\backslash
+qw & 
+\backslash
+qw
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This circuit generates a final state, after the same contractions of the
+ previous circuit, of the form:
+\begin_inset Formula 
+\begin{align*}
+\left\vert \psi_{\text{final}}\right\rangle  & =\left\vert 00\right\rangle \otimes\frac{1}{\sqrt{2}^{5}}(\text{reading I})\left\vert 0000m00\right\rangle \\
+ & +\left\vert 01\right\rangle \otimes\frac{1}{\sqrt{2}^{5}}(\text{reading II})\left\vert 0000m00\right\rangle \\
+ & +\left\vert 10\right\rangle \otimes\frac{1}{\sqrt{2}^{5}}(\text{reading III})\left\vert 0000m00\right\rangle \\
+ & +\left\vert 11\right\rangle \otimes\frac{1}{\sqrt{2}^{5}}(\text{reading IV})\left\vert 0000m00\right\rangle +\dots
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+One problem that seems to arise is that the probability to measure one of
+ this valid states (there are a lot of invalid states hidden in the 
+\begin_inset Quotes bld
+\end_inset
+
+
+\begin_inset Formula $\dots$
+\end_inset
+
+
+\begin_inset Quotes brd
+\end_inset
+
+) drops exponentially, as expected, since each control qubit we add results
+ in a doubling of possible basis states.
+ For a quick analysis, let's assume that we want to perform a general contractio
+n in which we leave only one qubit in the end of the circuit.
+ Let 
+\begin_inset Formula $C$
+\end_inset
+
+ be the number of index contractions for each interpretation, and 
+\begin_inset Formula $2^{r}$
+\end_inset
+
+ the number of possible readings.
+ Then the probability of measuring a contraction we want 
+\begin_inset Formula $C_{i}$
+\end_inset
+
+, where the left over qubit has index 
+\begin_inset Formula $k$
+\end_inset
+
+, is:
+\begin_inset Formula 
+\[
+P_{\text{valid}}=\frac{1}{2^{C+r}}\sum_{i=0}^{2^{n}}\left|C_{ik}\right|^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+So, if we can conveniently afford to perform 
+\begin_inset Formula $2^{n}$
+\end_inset
+
+ shots in a quantum computer, on average we'll have
+\begin_inset Formula 
+\[
+N_{\text{valid}}=2^{n-C-r}\sum_{i=0}^{2^{n}}\left|C_{ik}\right|^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+valid shots, and because the sum is always less than 1, we have:
+\begin_inset Formula 
+\[
+N_{\text{valid}}\leq2^{n-C-r}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For the simple example 
+\begin_inset Quotes bld
+\end_inset
+
+rigorous mathematicians and physicists
+\begin_inset Quotes brd
+\end_inset
+
+, we have 
+\begin_inset Formula $C=3$
+\end_inset
+
+ and 
+\begin_inset Formula $r=1$
+\end_inset
+
+, so if we can afford 
+\begin_inset Formula $2^{13}=8192$
+\end_inset
+
+ shots, so 
+\begin_inset Formula $n=13$
+\end_inset
+
+, we would on average observe 
+\begin_inset Formula $N_{\text{valid}}\leq2^{9}=512$
+\end_inset
+
+ valid shots.
+ 
+\end_layout
+
+\begin_layout Section
+Thoughts about the usage of Grover's Algorithm
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:grover's-section"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Quick overview
+\end_layout
+
+\begin_layout Standard
+In his 1996 paper 
+\emph on
+
+\begin_inset Quotes bld
+\end_inset
+
+A fast quantum mechanical algorithm for database search
+\begin_inset Quotes brd
+\end_inset
+
+
+\emph default
+, Grover showed the existence of a (the fastest actually) algorithm that
+ identified a record satisfying a particular property, in an unsorted database
+ containing 
+\begin_inset Formula $N$
+\end_inset
+
+ records.
+ One necessary procedure in this algorithm is the creation of a configuration
+ in which the amplitude of the system being in any of the 
+\begin_inset Formula $2^{n}$
+\end_inset
+
+ basis state is equal, which is:
+\begin_inset Formula 
+\begin{align*}
+\left\vert \psi_{\text{initial}}\right\rangle  & =\frac{1}{\sqrt{2^{n}}}\sum_{\sigma_{i}\in\left\{ 0,1\right\} ^{n}}\left\vert \sigma_{i}\right\rangle 
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $\sigma_{i}$
+\end_inset
+
+ is a certain n-bit string, so writing this more clearly for 
+\begin_inset Formula $n=3$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+\left\vert \psi_{\text{initial}}\right\rangle =\frac{1}{\sqrt{2^{3}}}\left[\left\vert 000\right\rangle +\left\vert 001\right\rangle +\left\vert 010\right\rangle +\left\vert 011\right\rangle +\left\vert 100\right\rangle +\left\vert 101\right\rangle +\left\vert 110\right\rangle +\left\vert 111\right\rangle \right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+To apply Grover's Algorithm to a 
+\begin_inset Formula $N=2^{n}$
+\end_inset
+
+ record database, one needs to associate each record 
+\begin_inset Formula $S_{i}$
+\end_inset
+
+ to a bit string, so for example
+\begin_inset Formula 
+\begin{align*}
+S_{0} & \equiv\left\vert 000\right\rangle \\
+S_{1} & \equiv\left\vert 001\right\rangle \\
+\dots & \equiv\dots\\
+S_{i} & \equiv\left\vert \sigma_{i}\right\rangle 
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The way the algorithm know how to pick the desired record involves the usage
+ of an 
+\emph on
+Oracle
+\emph default
+, which acts on each basis state in the following way:
+\begin_inset Formula 
+\[
+|x\rangle\stackrel{O}{\longrightarrow}(-1)^{f(x)}|x\rangle
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $f\left(x\right)=1$
+\end_inset
+
+ if 
+\begin_inset Formula $x$
+\end_inset
+
+ is a desired state, and 
+\begin_inset Formula $f\left(x\right)=0$
+\end_inset
+
+ otherwise.
+ 
+\end_layout
+
+\begin_layout Section
+Grover's algorithm for semantic analysis
+\end_layout
+
+\begin_layout Standard
+In this section I'll analyze section 4.3 of 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "adriana"
+literal "false"
+
+\end_inset
+
+, to gain a deeper understanding of it.
+ After a circuit that contracts a certain state, for example as explained
+ in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:contraction"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, let's suppose the contracted form (let's forget normalizations for now),
+ is:
+\begin_inset Formula 
+\[
+\left|\psi_{\text{initial }}\right\rangle =\sum_{aij}W_{i}^{a}t_{ij}\left\vert a\right\rangle \left\vert s_{j}\right\rangle 
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Each ket 
+\begin_inset Formula $\left\vert a\right\rangle $
+\end_inset
+
+ represents the index of a word, e.g.
+ if we had 4 possible answers 
+\begin_inset Formula $\left\{ \text{dog, cat, eagle, mouse}\right\} $
+\end_inset
+
+, these 
+\begin_inset Formula $\left\vert a\right\rangle $
+\end_inset
+
+ states could be:
+\begin_inset Formula 
+\begin{align*}
+\left\vert \text{dog}\right\rangle  & =\left\vert 00\right\rangle \\
+\left\vert \text{cat}\right\rangle  & =\left\vert 01\right\rangle \\
+\left\vert \text{eagle}\right\rangle  & =\left\vert 10\right\rangle \\
+\left\vert \text{mouse}\right\rangle  & =\left\vert 11\right\rangle 
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and the 
+\begin_inset Formula $\left\vert s_{j}\right\rangle $
+\end_inset
+
+ would be a 1-qubit ket, with 
+\begin_inset Formula $\left\vert \text{false}\right\rangle =\left\vert 0\right\rangle $
+\end_inset
+
+ and 
+\begin_inset Formula $\left\vert \text{true}\right\rangle =\left\vert 1\right\rangle $
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The general assumption is that the representation of the words in the the
+ form of the tensors 
+\begin_inset Formula $W_{i}^{a}$
+\end_inset
+
+ and 
+\begin_inset Formula $t_{ij}$
+\end_inset
+
+ is such that:
+\begin_inset Formula 
+\[
+\sum_{i}W_{i}^{a}t_{ij}=\begin{cases}
+1 & \text{if the pairing}\left(a,s_{j}\right)\text{ is correct}\\
+0 & \text{otherwise}
+\end{cases}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+So for example if the question was 
+\begin_inset Quotes bld
+\end_inset
+
+Is it a bird?
+\begin_inset Quotes brd
+\end_inset
+
+, 
+\begin_inset Formula $\left|\psi_{\text{initial }}\right\rangle $
+\end_inset
+
+ would be
+\begin_inset Formula 
+\begin{align*}
+\left|\psi_{\text{initial }}\right\rangle  & =\frac{1}{\sqrt{4}}\left(\left\vert 00\right\rangle \otimes\left\vert 0\right\rangle +\left\vert 01\right\rangle \otimes\left\vert 0\right\rangle +\left\vert 10\right\rangle \otimes\left\vert 1\right\rangle +\left\vert 11\right\rangle \otimes\left\vert 0\right\rangle \right)\\
+ & =\frac{1}{\sqrt{4}}\left(\left\vert \text{dog}\right\rangle \otimes\left\vert \text{false}\right\rangle +\left\vert \text{cat}\right\rangle \otimes\left\vert \text{false}\right\rangle +\left\vert \text{eagle}\right\rangle \otimes\left\vert \text{true}\right\rangle +\left\vert \text{mouse}\right\rangle \otimes\left\vert \text{false}\right\rangle \right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We want to use Grover's algorithm on this state in order to measure words
+ with 
+\begin_inset Formula $\left\vert s_{j}\right\rangle =\left\vert \text{true}\right\rangle $
+\end_inset
+
+, in our case 
+\begin_inset Formula $\left\vert \text{eagle}\right\rangle $
+\end_inset
+
+, with high probability.
+ The oracle 
+\begin_inset Formula $\hat{O}$
+\end_inset
+
+ for this problem is very simple: 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=2]{$
+\backslash
+ket{
+\backslash
+psi_{
+\backslash
+text{initial}}}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+ctrl{1} & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$
+\backslash
+ket{-}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate{X} & 
+\backslash
+qw
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where the qubit 
+\begin_inset Formula $\left\vert -\right\rangle =\frac{\left\vert 0\right\rangle -\left\vert 1\right\rangle }{\sqrt{2}}$
+\end_inset
+
+ is part of the oracle workspace.
+ However, our initial state 
+\begin_inset Formula $\left\vert \psi_{\text{initial}}\right\rangle $
+\end_inset
+
+ is the usual initial state in Grover's algorithm, as was mentioned in section
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:grover's-section"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+It turns out that if we make the change
+\begin_inset Formula 
+\[
+\left(2\left\vert \psi\right\rangle \left\langle \psi\right\vert -\hat{1}\right)\hat{O}\longrightarrow\left(2\left\vert \psi_{\text{initial}}\right\rangle \left\langle \psi_{\text{initial}}\right\vert -\hat{1}\right)\hat{O}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+or expressed in a different way,
+\begin_inset Formula 
+\[
+H^{\otimes n}\left(2\left\vert 0\right\rangle \left\langle 0\right\vert -\hat{1}\right)H^{\otimes n}\hat{O}\longrightarrow U\left(2\left\vert 0\right\rangle \left\langle 0\right\vert -\hat{1}\right)U^{\dagger}\hat{O}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $U\left\vert 0\right\rangle =\left\vert \psi_{\text{initial}}\right\rangle $
+\end_inset
+
+.
+ Let's also express 
+\begin_inset Formula $\left\vert \psi_{\text{initial}}\right\rangle $
+\end_inset
+
+ in the usual way.
+ Firstly, we define the following states:
+\begin_inset Formula 
+\begin{align*}
+\left\vert \alpha\right\rangle  & =\frac{1}{\sqrt{P-Q}}\sum_{x}\left\vert x\right\rangle \\
+\left\vert \beta\right\rangle  & =\frac{1}{\sqrt{Q}}\sum_{x'}\left\vert x'\right\rangle 
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $\left\vert x\right\rangle =\left\vert a\right\rangle \otimes\left\vert 0\right\rangle $
+\end_inset
+
+ and 
+\begin_inset Formula $\left\vert x'\right\rangle =\left\vert a\right\rangle \otimes\left\vert 1\right\rangle $
+\end_inset
+
+.
+ Thus we can write:
+\begin_inset Formula 
+\begin{align*}
+\left|\psi_{\text{initial }}\right\rangle  & =\frac{1}{\sqrt{4}}\left(\left\vert 00\right\rangle \otimes\left\vert 0\right\rangle +\left\vert 01\right\rangle \otimes\left\vert 0\right\rangle +\left\vert 10\right\rangle \otimes\left\vert 1\right\rangle +\left\vert 11\right\rangle \otimes\left\vert 0\right\rangle \right)\\
+ & =\frac{\sqrt{3}}{\sqrt{4}}\frac{1}{\sqrt{3}}\left[\left\vert 00\right\rangle +\left\vert 01\right\rangle +\left\vert 11\right\rangle \right]\otimes\left\vert 0\right\rangle +\frac{1}{\sqrt{4}}\left\vert 10\right\rangle \otimes\left\vert 1\right\rangle \\
+ & =\frac{\sqrt{3}}{\sqrt{4}}\left\vert \alpha0\right\rangle +\frac{1}{\sqrt{4}}\left\vert \beta1\right\rangle \\
+ & =\cos\left(\frac{\theta}{2}\right)\left\vert \alpha0\right\rangle +\sin\left(\frac{\theta}{2}\right)\left\vert \beta1\right\rangle 
+\end{align*}
+
+\end_inset
+
+This allows us recover the same computation that was happening in the usual
+ Grover's algorithm:
+\begin_inset Formula 
+\begin{align*}
+ & \left(2\left\vert \psi_{\text{initial}}\right\rangle \left\langle \psi_{\text{initial}}\right\vert -\hat{1}\right)\hat{O}\left\vert \psi_{\text{initial}}\right\rangle \\
+= & \left[2\left(\cos\left(\frac{\theta}{2}\right)\left\langle \alpha0\right\vert +\sin\left(\frac{\theta}{2}\right)\left\langle \beta1\right\vert \right)\left(\cos\left(\frac{\theta}{2}\right)\left\vert \alpha0\right\rangle +\sin\left(\frac{\theta}{2}\right)\left\vert \beta1\right\rangle \right)-\hat{1}\right]\left[\cos\left(\frac{\theta}{2}\right)\left\vert \alpha0\right\rangle -\sin\left(\frac{\theta}{2}\right)\left\vert \beta1\right\rangle \right]\\
+= & \dots\\
+= & \cos\left(\frac{3\theta}{2}\right)\left\vert \alpha0\right\rangle +\sin\left(\frac{3\theta}{2}\right)\left\vert \beta1\right\rangle 
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Thus the proof of convergence of this altered Grover's algorithm is the
+ same as the usual one.
+ The missing piece of the puzzle is: how do we build 
+\begin_inset Formula $U$
+\end_inset
+
+, s.t.
+ 
+\begin_inset Formula $U\left\vert 0\right\rangle =\left\vert \psi_{\text{initial}}\right\rangle $
+\end_inset
+
+, at 
+\begin_inset Quotes bld
+\end_inset
+
+runtime
+\begin_inset Quotes brd
+\end_inset
+
+?
+\end_layout
+
+\begin_layout Standard
+In my view, some observations worth mentioning are:
+\end_layout
+
+\begin_layout Enumerate
+We are trying to find one circuit that does two things: take initial words
+ represented in quantum states and contract them into 
+\begin_inset Formula $\left\vert \psi_{\text{initial}}\right\rangle $
+\end_inset
+
+; take 
+\begin_inset Formula $\left\vert \psi_{\text{initial}}\right\rangle $
+\end_inset
+
+ and apply the operator 
+\begin_inset Formula $U\left(2\left\vert 0\right\rangle \left\langle 0\right\vert -\hat{1}\right)U^{\dagger}\hat{O}$
+\end_inset
+
+ several times, until we can measure a state with truth value 
+\begin_inset Formula $s_{j}=1$
+\end_inset
+
+ with high probability.
+\end_layout
+
+\begin_layout Enumerate
+If we choose to keep the size of the total qubit space, for example as in
+ the following picture:
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=6]{$
+\backslash
+ket{
+\backslash
+text{who}}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+ctrl{9} & 
+\backslash
+gate{H} & 
+\backslash
+meter{} 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+ctrl{7} & 
+\backslash
+gate{H} &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+meter{}  
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+gate[wires=2]{G} &      
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &               
+\backslash
+qw &      
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+ctrl{3} & 
+\backslash
+gate{H} &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+meter{}  
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+ctrl{1} & 
+\backslash
+gate{H} &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+meter{}  
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=2]{$
+\backslash
+ket{
+\backslash
+text{talks}}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate{X} &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+meter{}  
+\backslash
+
+\backslash
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+gate{X} &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+meter{}  
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=2]{$
+\backslash
+ket{
+\backslash
+text{answers}}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+gate{X} &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+meter{}  
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+gate{X} &      
+\backslash
+qw & 
+\backslash
+meter{}  
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\end_inset
+
+Then we would have to know what exactly 
+\begin_inset Formula $\left\vert \psi_{\text{initial}}\right\rangle $
+\end_inset
+
+ is even before running the circuit, such that we can build 
+\begin_inset Formula $U$
+\end_inset
+
+.
+ But because we don't know that (the circuit itself will calculate 
+\begin_inset Formula $\left\vert \psi_{\text{initial}}\right\rangle $
+\end_inset
+
+), we can't build 
+\begin_inset Formula $U$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Another option that comes to mind would be that of duplicating the qubit
+ space, and have half of it only contract the state and use it as a control
+ to apply 
+\begin_inset Formula $U$
+\end_inset
+
+, like this: 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=6]{$
+\backslash
+ket{
+\backslash
+text{who}}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+ctrl{9} & 
+\backslash
+gate{H} & 
+\backslash
+meter{} 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+ctrl{7} & 
+\backslash
+gate{H} &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+meter{}  
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+gate[wires=12]{G} &      
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &                
+\backslash
+qw &      
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+ctrl{3} & 
+\backslash
+gate{H} &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+meter{} &  
+\backslash
+                  & 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+ctrl{1} & 
+\backslash
+gate{H} &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+meter{} &                    & 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=2]{$
+\backslash
+ket{
+\backslash
+text{talks}}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate{X} &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+meter{} &                    & 
+\backslash
+
+\backslash
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+gate{X} &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+meter{} &                    & 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=2]{$
+\backslash
+ket{
+\backslash
+text{answers}}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+gate{X} &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+meter{} &                    & 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+gate{X} &      
+\backslash
+qw & 
+\backslash
+meter{} &                    & 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=6]{$
+\backslash
+ket{
+\backslash
+text{who}}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+ctrl{9} & 
+\backslash
+gate{H} & 
+\backslash
+meter{} &                    & 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+ctrl{7} & 
+\backslash
+gate{H} &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+meter{} &                    & 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &               
+\backslash
+qw &      
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &               
+\backslash
+qw &      
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+ctrl{3} & 
+\backslash
+gate{H} &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+meter{}  
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+ctrl{1} & 
+\backslash
+gate{H} &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+meter{}  
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=2]{$
+\backslash
+ket{
+\backslash
+text{talks}}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate{X} &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+meter{}  
+\backslash
+
+\backslash
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+gate{X} &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+meter{}  
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=2]{$
+\backslash
+ket{
+\backslash
+text{answers}}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+gate{X} &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+meter{}  
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+gate{X} &      
+\backslash
+qw & 
+\backslash
+meter{}  
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\end_inset
+
+To make this idea work, we would have to come up with a procedure 
+\begin_inset Formula $U$
+\end_inset
+
+ that performs 
+\begin_inset Formula $U\left(\left\vert \psi_{\text{initial}}\right\rangle \otimes\left\vert 0\right\rangle \right)=\left\vert \psi_{\text{initial}}\right\rangle \otimes\left\vert \psi_{\text{initial}}\right\rangle $
+\end_inset
+
+ (or some other standard pure state 
+\begin_inset Formula $\left\vert g\right\rangle $
+\end_inset
+
+ in place of 
+\begin_inset Formula $\left\vert 0\right\rangle $
+\end_inset
+
+).
+ Let's suppose there is such a unitary operator 
+\begin_inset Formula $U$
+\end_inset
+
+ that performs that copy.
+ If we have two different initial states (for example, cause by asking a
+ different question) 
+\begin_inset Formula $\left\vert \psi_{\text{initial}}\right\rangle $
+\end_inset
+
+ and 
+\begin_inset Formula $\left\vert \phi_{\text{initial}}\right\rangle $
+\end_inset
+
+, then we have:
+\begin_inset Formula 
+\begin{align*}
+U\left(\left\vert \psi_{\text{initial}}\right\rangle \otimes\left\vert 0\right\rangle \right) & =\left\vert \psi_{\text{initial}}\right\rangle \otimes\left\vert \psi_{\text{initial}}\right\rangle \\
+U\left(\left\vert \phi_{\text{initial}}\right\rangle \otimes\left\vert 0\right\rangle \right) & =\left\vert \phi_{\text{initial}}\right\rangle \otimes\left\vert \phi_{\text{initial}}\right\rangle 
+\end{align*}
+
+\end_inset
+
+and we take the inner product of both expressions, we have:
+\begin_inset Formula 
+\begin{align*}
+\left[\left(\left\langle \phi_{\text{initial}}\right\vert \otimes\left\langle 0\right\vert \right)U^{\dagger}\right]\left[U\left(\left\vert \psi_{\text{initial}}\right\rangle \otimes\left\vert 0\right\rangle \right)\right] & =\left[\left\langle \phi_{\text{initial}}\right\vert \otimes\left\langle \phi_{\text{initial}}\right\vert \right]\left[\left\vert \psi_{\text{initial}}\right\rangle \otimes\left\vert \psi_{\text{initial}}\right\rangle \right]\\
+\left(\left\langle \phi_{\text{initial}}\right\vert \otimes\left\langle 0\right\vert \right)\left(\left\vert \psi_{\text{initial}}\right\rangle \otimes\left\vert 0\right\rangle \right) & =\left\langle \phi_{\text{initial}}\right\vert \psi_{\text{initial}}\rangle^{2}\\
+\left\langle \phi_{\text{initial}}\right\vert \psi_{\text{initial}}\rangle & =\left\langle \phi_{\text{initial}}\right\vert \psi_{\text{initial}}\rangle^{2}
+\end{align*}
+
+\end_inset
+
+which implies 
+\begin_inset Formula $\left\langle \phi_{\text{initial}}\right\vert \psi_{\text{initial}}\rangle=0$
+\end_inset
+
+ or 
+\begin_inset Formula $\left\langle \phi_{\text{initial}}\right\vert \psi_{\text{initial}}\rangle=1$
+\end_inset
+
+, meaning either 
+\begin_inset Formula $\left\vert \psi_{\text{initial}}\right\rangle $
+\end_inset
+
+ and 
+\begin_inset Formula $\left\vert \phi_{\text{initial}}\right\rangle $
+\end_inset
+
+ are orthogonal, or 
+\begin_inset Formula $\left\vert \psi_{\text{initial}}\right\rangle =\left\vert \phi_{\text{initial}}\right\rangle $
+\end_inset
+
+.
+ This is the no cloning theorem: a 
+\emph on
+general
+\emph default
+ quantum cloning device is impossible.
+ Thus, in principle, the idea in this point cannot be implemented.
+\end_layout
+
+\begin_layout Standard
+What about doing the contractions classically? This presents some advantages:
+ 
+\end_layout
+
+\begin_layout Itemize
+We know a exact expression for 
+\begin_inset Formula $\left\vert \psi_{\text{initial}}\right\rangle $
+\end_inset
+
+, which would allow us to come up with a particular gate 
+\begin_inset Formula $U'$
+\end_inset
+
+ s.t.
+ 
+\begin_inset Formula $U'\left\vert 0\right\rangle =\left\vert \psi_{\text{initial}}\right\rangle $
+\end_inset
+
+.
+ We would just need to initialize 
+\begin_inset Formula $\left\vert \psi_{\text{initial}}\right\rangle $
+\end_inset
+
+ by 
+\begin_inset Quotes bld
+\end_inset
+
+hand
+\begin_inset Quotes brd
+\end_inset
+
+ and then apply Grover's to it.
+ 
+\end_layout
+
+\begin_layout Itemize
+We wouldn't have to perform a lot of 
+\begin_inset Quotes bld
+\end_inset
+
+shots
+\begin_inset Quotes brd
+\end_inset
+
+ until we measure 0's in all the non-remaining wires.
+\end_layout
+
+\begin_layout Itemize
+In terms of doing proofs of concept, this would make that easier since we
+ can easily build a state like 
+\begin_inset Formula $\left|\psi_{\text{initial }}\right\rangle =\frac{1}{\sqrt{4}}\left(\left\vert 00\right\rangle \otimes\left\vert 0\right\rangle +\left\vert 01\right\rangle \otimes\left\vert 0\right\rangle +\left\vert 10\right\rangle \otimes\left\vert 1\right\rangle +\left\vert 11\right\rangle \otimes\left\vert 0\right\rangle \right)$
+\end_inset
+
+ without having to find special tensors 
+\begin_inset Formula $W$
+\end_inset
+
+ and 
+\begin_inset Formula $t$
+\end_inset
+
+ such that 
+\begin_inset Formula $\sum_{i}W_{i}^{a}t_{ij}=0,1$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+But also some disadvantages:
+\end_layout
+
+\begin_layout Itemize
+Contracting classically probably makes using Grover's algorithm worthless,
+ since building contracting the state and building the matrix 
+\begin_inset Formula $U'$
+\end_inset
+
+ is probably of higher complexity than 
+\begin_inset Formula $O\left(N\right)$
+\end_inset
+
+.
+ At least building the matrix is 
+\begin_inset Formula $O\left(N\right)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+Generalization of Grover's Algorithm
+\end_layout
+
+\begin_layout Subsection
+Summary
+\end_layout
+
+\begin_layout Standard
+In the paper 
+\emph on
+Quantum Amplitude Amplification and Estimation
+\emph default
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "mosca"
+literal "false"
+
+\end_inset
+
+, it's shown that if one has a state 
+\begin_inset Formula $\left\vert \psi\right\rangle $
+\end_inset
+
+ that was generated by a unitary transformation as 
+\begin_inset Formula $\left\vert \psi\right\rangle =\mathcal{A}\left\vert 0\right\rangle $
+\end_inset
+
+, and it can be written as 
+\begin_inset Formula $\left\vert \psi\right\rangle =\left\vert \psi_{1}\right\rangle +\left\vert \psi_{0}\right\rangle $
+\end_inset
+
+, where it is our goal to amplify the state 
+\begin_inset Formula $\left\vert \psi_{1}\right\rangle $
+\end_inset
+
+ (i.e.
+ shift more probability mass to it s.t.
+ it is measured with higher probability), then that can be done by repeated
+ application of the operator 
+\begin_inset Formula $Q=-\mathcal{A}S_{0}\mathcal{A}^{\dagger}S_{\chi}$
+\end_inset
+
+, where 
+\begin_inset Formula $S_{0}$
+\end_inset
+
+ flips the sign only of the zero state and 
+\begin_inset Formula $S_{\chi}$
+\end_inset
+
+ flips the sign only of the desired state.
+ This works because the 
+\begin_inset Formula $m^{\text{th}}$
+\end_inset
+
+ iteration is:
+\begin_inset Formula 
+\[
+Q^{m}\left\vert \psi\right\rangle =\frac{1}{\sqrt{a}}\sin\left(\left(2m+1\right)\theta_{a}\right)\left\vert \psi_{1}\right\rangle +\frac{1}{\sqrt{1-a}}\cos\left(\left(2m+1\right)\theta_{a}\right)\left\vert \psi_{0}\right\rangle 
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\theta_{a}\in\left[0,\frac{\pi}{2}\right]$
+\end_inset
+
+ is defined s.t.
+ 
+\begin_inset Formula $\sin\left(\theta_{a}\right)=a=\left\langle \psi_{1}\vert\psi_{1}\right\rangle $
+\end_inset
+
+, which means that 
+\begin_inset Formula $\left\vert \psi_{1}\right\rangle $
+\end_inset
+
+ will be measured with probability 
+\begin_inset Formula $\sin^{2}\left(\left(2j+1\right)\theta_{a}\right)$
+\end_inset
+
+.
+ It is desired that this probability is close to 1, and that can be achieved
+ by setting 
+\begin_inset Formula $m=\lfloor\frac{\pi}{4\theta_{a}}\rfloor$
+\end_inset
+
+, which will produce a good outcome with probability 
+\emph on
+at least
+\emph default
+ 
+\begin_inset Formula $\max\left(1-a,a\right)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Detailed explanation
+\end_layout
+
+\begin_layout Standard
+In his original 1996 paper 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "grover"
+literal "false"
+
+\end_inset
+
+, Grover formulated his algorithm to work on an initial state consisting
+ of a equal superposition of all basis states, which for the 3-qubit case
+ would be, for clarity:
+\begin_inset Formula 
+\[
+\left\vert \psi_{\text{G}}\right\rangle =\frac{1}{\sqrt{2^{3}}}\left[\left\vert 000\right\rangle +\left\vert 001\right\rangle +\left\vert 010\right\rangle +\left\vert 011\right\rangle +\left\vert 100\right\rangle +\left\vert 101\right\rangle +\left\vert 110\right\rangle +\left\vert 111\right\rangle \right]
+\]
+
+\end_inset
+
+But what if we still wanted to use the same mechanism to amplify a certain
+ part of the state, i.e.
+ shift probability mass into that certain part, but our 
+\begin_inset Formula $\left\vert \psi_{\text{initial}}\right\rangle $
+\end_inset
+
+ was not the same as 
+\begin_inset Formula $\left\vert \psi_{\text{G}}\right\rangle $
+\end_inset
+
+? In 
+\emph on
+Quantum Amplitude Amplification and Estimation
+\emph default
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "mosca"
+literal "false"
+
+\end_inset
+
+, a generalization of Grover's algorithm is achieved, which will be explained
+ in this section.
+ 
+\end_layout
+
+\begin_layout Standard
+Consider:
+\end_layout
+
+\begin_layout Itemize
+A Boolean function of the form 
+\begin_inset Formula $\chi:X\rightarrow\{0,1\}$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\chi\left(x\right)=\left\{ \begin{aligned}1 & \text{ if }x\,\text{is \emph{good}}\\
+0 & \text{ if }x\,\text{is \emph{bad}}
+\end{aligned}
+\right.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+A Hilbert space 
+\begin_inset Formula $\mathcal{H}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+A unitary operator 
+\begin_inset Formula $\mathcal{A}$
+\end_inset
+
+, and a state 
+\begin_inset Formula $\left\vert \psi\right\rangle =\mathcal{A}\left\vert 0\right\rangle $
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Because the function 
+\begin_inset Formula $\chi$
+\end_inset
+
+ induces a partition of 
+\begin_inset Formula $\mathcal{H}$
+\end_inset
+
+ into a direct sum 
+\begin_inset Formula $\mathcal{H_{\text{\emph{good}}}}\oplus\mathcal{H_{\text{\emph{bad}}}}$
+\end_inset
+
+, any arbitrary state 
+\begin_inset Formula $\left\vert \gamma\right\rangle \in\mathcal{H}$
+\end_inset
+
+ can be written in the form
+\begin_inset Formula 
+\[
+\left\vert \gamma\right\rangle =\left\vert \gamma_{1}\right\rangle +\left\vert \gamma_{0}\right\rangle ,
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\left\vert \gamma_{1}\right\rangle \in\mathcal{H_{\text{\emph{good}}}}$
+\end_inset
+
+ and 
+\begin_inset Formula $\left\vert \gamma_{0}\right\rangle \in\mathcal{H}_{\text{\emph{bad}}}$
+\end_inset
+
+ (
+\begin_inset Formula $\left\vert \gamma_{1}\right\rangle \text{and}\left\vert \gamma_{0}\right\rangle $
+\end_inset
+
+ are in general not normalized states).
+ If we just measured 
+\begin_inset Formula $\left\vert \gamma\right\rangle $
+\end_inset
+
+, the probability of having a good state as outcome is 
+\begin_inset Formula 
+\[
+a=\left\langle \gamma_{1}\vert\gamma_{1}\right\rangle 
+\]
+
+\end_inset
+
+The amplification process, which will allow us to measure a good state with
+ much higher probability, consists in repeatedly applying the following
+ operator:
+\begin_inset Formula 
+\[
+Q=-\mathcal{A}S_{0}\mathcal{A}^{-1}S_{\chi}
+\]
+
+\end_inset
+
+where:
+\begin_inset Formula 
+\begin{align*}
+S_{0}\left\vert x\right\rangle  & =\left\{ \begin{aligned}-\left\vert x\right\rangle  & \text{ if }x=0\\
+\left\vert x\right\rangle  & \text{\,otherwise}
+\end{aligned}
+\right.\\
+S_{\chi}\left\vert x\right\rangle  & =\left\{ \begin{aligned}-\left\vert x\right\rangle  & \text{ if }x\,\text{is \emph{good}}\\
+\left\vert x\right\rangle  & \text{\,otherwise}
+\end{aligned}
+\right.
+\end{align*}
+
+\end_inset
+
+This operator can also be written in a more intuitive way:
+\begin_inset Formula 
+\begin{align*}
+Q & =-\mathcal{A}S_{0}\mathcal{A}^{-1}S_{\chi}\\
+ & =-\mathcal{A}\left(1-2\left\vert 0\right\rangle \left\langle 0\right\vert \right)\mathcal{A}^{-1}\left(2\frac{\left\vert \psi_{0}\right\rangle \left\langle \psi_{0}\right\vert }{\left\langle \psi_{0}\vert\psi_{0}\right\rangle }-1\right)\\
+ & =\left(1-2\left\vert \psi\right\rangle \left\langle \psi\right\vert \right)\left(1-\frac{2}{1-a}\left\vert \psi_{0}\right\rangle \left\langle \psi_{0}\right\vert \right)\\
+ & =U_{\psi}U_{\psi_{0}}
+\end{align*}
+
+\end_inset
+
+which consists in two reflections: first through 
+\begin_inset Formula $\left\vert \psi_{0}\right\rangle $
+\end_inset
+
+ and then through 
+\begin_inset Formula $\left\vert \psi\right\rangle $
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Let's denote 
+\begin_inset Formula $\mathcal{H}_{\psi}$
+\end_inset
+
+ the subspace spanned by 
+\begin_inset Formula $\left\vert \psi_{1}\right\rangle \text{and}\left\vert \psi_{0}\right\rangle $
+\end_inset
+
+.
+ We see that it is stable under 
+\begin_inset Formula $Q$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{align*}
+\begin{aligned}\mathrm{Q}\left|\Psi_{1}\right\rangle \end{aligned}
+ & =(1-2a)\left|\Psi_{1}\right\rangle -2a\left|\Psi_{0}\right\rangle \\
+\mathrm{Q}\left|\Psi_{0}\right\rangle  & =2(1-a)\left|\Psi_{1}\right\rangle +(1-2a)\left|\Psi_{0}\right\rangle .
+\end{align*}
+
+\end_inset
+
+We can also see that the operator 
+\begin_inset Formula $\mathcal{A}S_{0}\mathcal{A}^{-1}=1-2\left\vert \psi\right\rangle \left\langle \psi\right\vert $
+\end_inset
+
+ acts as the identity on 
+\begin_inset Formula $\mathcal{H}_{\psi}^{\perp}$
+\end_inset
+
+, the orthogonal complement of 
+\begin_inset Formula $\mathcal{H}_{\psi}$
+\end_inset
+
+, which implies 
+\begin_inset Formula $Q$
+\end_inset
+
+ acts as 
+\begin_inset Formula $-S_{\chi}$
+\end_inset
+
+ on 
+\begin_inset Formula $\mathcal{H}_{\psi}^{\perp}$
+\end_inset
+
+.
+ Thus, 
+\begin_inset Formula $Q^{2}$
+\end_inset
+
+ acts as the identity on 
+\begin_inset Formula $\mathcal{H}_{\psi}^{\perp}$
+\end_inset
+
+, which implies every eigenvector of 
+\begin_inset Formula $Q$
+\end_inset
+
+ on 
+\begin_inset Formula $\mathcal{H}_{\psi}^{\perp}$
+\end_inset
+
+ has eigenvalue 
+\begin_inset Formula $\pm1$
+\end_inset
+
+.
+ Thus, to understand the action of 
+\begin_inset Formula $Q$
+\end_inset
+
+ in any arbitrary 
+\begin_inset Formula $\left\vert \gamma\right\rangle \in\mathcal{H}$
+\end_inset
+
+, we only need to consider it's projection onto 
+\begin_inset Formula $\mathcal{H}_{\psi}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Since 
+\begin_inset Formula $Q$
+\end_inset
+
+ is unitary, the subspace 
+\begin_inset Formula $\mathcal{H}_{\psi}$
+\end_inset
+
+ has an orthonormal basis consisting of two eigenvectors of 
+\begin_inset Formula $Q$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+\left|\psi_{\pm}\right\rangle =\frac{1}{\sqrt{2}}\left(\frac{1}{\sqrt{a}}\left|\psi_{1}\right\rangle \pm\frac{i}{\sqrt{1-a}}\left|\psi_{0}\right\rangle \right)
+\]
+
+\end_inset
+
+and their eigenvalues are 
+\begin_inset Formula $\lambda_{\pm}=e^{\pm i2\theta_{a}}$
+\end_inset
+
+.
+ Our initial state 
+\begin_inset Formula $\left\vert \psi\right\rangle $
+\end_inset
+
+ is written in this basis as
+\begin_inset Formula 
+\[
+\left|\psi\right\rangle =\frac{-i}{\sqrt{2}}\left(e^{i\theta_{a}}\left|\psi_{+}\right\rangle -e^{-i\theta_{a}}\left|\psi_{-}\right\rangle \right)
+\]
+
+\end_inset
+
+which implies
+\begin_inset Formula 
+\begin{align*}
+Q^{m}\left\vert \psi\right\rangle  & =\frac{-i}{\sqrt{2}}\left(e^{i(2m+1)\theta_{a}}\left|\psi_{+}\right\rangle -e^{-i(2j+1)\theta_{a}}\left|\psi_{-}\right\rangle \right)\\
+ & =\frac{1}{\sqrt{a}}\sin\left(\left(2m+1\right)\theta_{a}\right)\left\vert \psi_{1}\right\rangle +\frac{1}{\sqrt{1-a}}\cos\left(\left(2m+1\right)\theta_{a}\right)\left\vert \psi_{0}\right\rangle 
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+How does this look like in our context
+\end_layout
+
+\begin_layout Standard
+Let's illustrate how this general method applies in our case.
+ For this, let's again consider the simplest contraction possible: the 3-qubit
+ example, given by the circuit:
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$B_{i}
+\backslash
+ket{i}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+ctrl{1} & 
+\backslash
+gate{H} & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=2]{$C_{jk}
+\backslash
+ket{jk}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate{X} &      
+\backslash
+qw & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+qw 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\end_inset
+
+which is equivalent (by definition) to all the following circuits:
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{figure}[H]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+sbox0{
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$B_{i}
+\backslash
+ket{i}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+ctrl{1} & 
+\backslash
+gate{H} & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=2]{$C_{jk}
+\backslash
+ket{jk}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate{X} &      
+\backslash
+qw & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+qw 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+}%
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+sbox1{
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate[wires=1]{B} & 
+\backslash
+ctrl{1} & 
+\backslash
+gate{H} & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate[wires=2]{C} & 
+\backslash
+gate{X} &      
+\backslash
+qw & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&               
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+qw
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+}%
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+sbox2{
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate[wires=3]{
+\backslash
+mathcal{A}} & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&                         
+\backslash
+qw & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&                         
+\backslash
+qw & 
+\backslash
+qw 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+}% 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{tabular}{ccc}  &  &  
+\backslash
+
+\backslash
+ 
+\backslash
+usebox0 & 
+\backslash
+usebox1 & 
+\backslash
+usebox2 
+\backslash
+end{tabular} 
+\backslash
+end{figure}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $B\left\vert 0\right\rangle =B_{i}\left\vert i\right\rangle $
+\end_inset
+
+ and 
+\begin_inset Formula $C\left\vert 00\right\rangle =C_{jk}\left\vert jk\right\rangle $
+\end_inset
+
+ are unitary operators.
+ We also need the operator 
+\begin_inset Formula $\mathcal{A}^{\dagger}$
+\end_inset
+
+, which is:
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{figure}[H]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+sbox0{
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate{H} & 
+\backslash
+ctrl{1} &  
+\backslash
+gate[wires=1]{B^{
+\backslash
+dagger}} & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw & 
+\backslash
+gate{X} &  
+\backslash
+gate[wires=2]{C^{
+\backslash
+dagger}} & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw &                          
+\backslash
+qw & 
+\backslash
+qw
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+}%
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+sbox1{
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate[wires=3]{
+\backslash
+mathcal{A}^{
+\backslash
+dagger}} & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&                         
+\backslash
+qw & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	&                         
+\backslash
+qw & 
+\backslash
+qw 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+}%
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{tabular}{cc}
+\end_layout
+
+\begin_layout Plain Layout
+
+   &   
+\backslash
+
+\backslash
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+usebox0 & 
+\backslash
+usebox1 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{tabular} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{figure}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The first iteration of this method thus looks like the following circuit,
+ where algorithm 
+\begin_inset Formula $Q$
+\end_inset
+
+ is inside the red dashed lines:
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate[wires=3]{
+\backslash
+mathcal{A}}
+\backslash
+slice{} & 
+\backslash
+octrl{1} & 
+\backslash
+gate[wires=3]{
+\backslash
+mathcal{A}^{
+\backslash
+dagger}} & 
+\backslash
+gate{X} &      
+\backslash
+qw & 
+\backslash
+ctrl{1} &      
+\backslash
+qw & 
+\backslash
+gate{X} & 
+\backslash
+gate[wires=3]{
+\backslash
+mathcal{A}}
+\backslash
+slice{} & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&                                 
+\backslash
+qw & 
+\backslash
+octrl{1} &                                   
+\backslash
+qw & 
+\backslash
+gate{X} &      
+\backslash
+qw & 
+\backslash
+ctrl{1} &      
+\backslash
+qw & 
+\backslash
+gate{X} &                                 
+\backslash
+qw & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&                                 
+\backslash
+qw &  
+\backslash
+ctrl{1} &                                   
+\backslash
+qw & 
+\backslash
+gate{X} & 
+\backslash
+gate{H} & 
+\backslash
+gate{X} & 
+\backslash
+gate{H} & 
+\backslash
+gate{X} &                                 
+\backslash
+qw & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$
+\backslash
+ket{-}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&                                 
+\backslash
+qw &  
+\backslash
+gate{X} &                                   
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &                                 
+\backslash
+qw & 
+\backslash
+qw
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\end_inset
+
+In this simple example, our desired basis state is 
+\begin_inset Formula $\left\vert 001\right\rangle $
+\end_inset
+
+, because the component where the two first qubits are 0 has our correct
+ contraction, and the final qubit in this example works as the truth value
+ of the contraction (it corresponds to the 
+\begin_inset Formula $\left\vert s_{j}\right\rangle $
+\end_inset
+
+ qubit in the 
+\begin_inset Formula $\left|\Psi_{\text{initial }}\right\rangle =\sum_{aij}W_{ia}t_{ij}|a\rangle_{3}\left|s_{j}\right\rangle _{4}$
+\end_inset
+
+ of 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "adriana"
+literal "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Implementation of 
+\emph on
+who talks?
+\end_layout
+
+\begin_layout Standard
+In this section we apply this algorithm to the 
+\emph on
+
+\begin_inset Quotes bld
+\end_inset
+
+who talks?
+\begin_inset Quotes brd
+\end_inset
+
+ 
+\emph default
+in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "adriana"
+literal "false"
+
+\end_inset
+
+.
+ First of all, we have to make a specific choice of tensors to be contracted.
+ After contractions, the state in the remaining wires should be 
+\begin_inset Formula 
+\[
+\left|\psi_{\text{initial}}\right\rangle =\sum_{aij}W_{ia}t_{ij}\left\vert as_{j}\right\rangle .
+\]
+
+\end_inset
+
+Let's suppose that we have two possible answers, 
+\begin_inset Formula $\left\vert \text{dog}\right\rangle =\left\vert 1\right\rangle $
+\end_inset
+
+ and 
+\begin_inset Formula $\left\vert \text{cat}\right\rangle =\left\vert 0\right\rangle $
+\end_inset
+
+, and that 
+\begin_inset Formula $\left\vert \text{dog}\right\rangle $
+\end_inset
+
+ is a correct answer to the question 
+\emph on
+
+\begin_inset Quotes bld
+\end_inset
+
+who talks?
+\begin_inset Quotes brd
+\end_inset
+
+
+\emph default
+, and 
+\begin_inset Formula $\left\vert \text{cat}\right\rangle $
+\end_inset
+
+ is not.
+ Thus, this state would become:
+\begin_inset Formula 
+\begin{align*}
+\left|\psi_{\text{initial}}\right\rangle  & =\left\vert \text{cat}\right\rangle \otimes\left\vert \text{false}\right\rangle +\left\vert \text{dog}\right\rangle \otimes\left\vert \text{true}\right\rangle \\
+ & =\left\vert 00\right\rangle +\left\vert 11\right\rangle .
+\end{align*}
+
+\end_inset
+
+Thus, we have to find tensors 
+\begin_inset Formula $W_{ia}$
+\end_inset
+
+ and 
+\begin_inset Formula $t_{ij}$
+\end_inset
+
+ that contract this way.
+ This can be achieved by setting 
+\begin_inset Formula $W_{ij}=\frac{\delta_{ij}}{\sqrt{2}}$
+\end_inset
+
+ and 
+\begin_inset Formula $t_{ij}=\frac{\delta_{ij}}{\sqrt{2}}$
+\end_inset
+
+ (the normalization factors need to be there because initial states are
+ generated with these tensors):
+\begin_inset Formula 
+\begin{align*}
+\left|\psi_{\text{initial}}\right\rangle  & =\sum_{aij}W_{ia}t_{ij}\left\vert as_{j}\right\rangle \\
+ & =\frac{1}{2}\sum_{aij}\delta_{ia}\delta_{ij}\left\vert as_{j}\right\rangle \\
+ & =\frac{1}{2}\delta_{00}\delta_{00}\left\vert 00\right\rangle +\frac{1}{2}\delta_{11}\delta_{11}\left\vert 11\right\rangle \\
+ & =\frac{1}{2}\left(\left\vert 00\right\rangle +\left\vert 11\right\rangle \right)
+\end{align*}
+
+\end_inset
+
+This implies that our (explicit) initial states are:
+\begin_inset Formula 
+\begin{align*}
+\left\vert \text{talks}\right\rangle  & =t_{mn}\left\vert n_{m}s_{n}\right\rangle =\frac{1}{\sqrt{2}}\left(\left\vert 00\right\rangle +\left\vert 11\right\rangle \right)\\
+\left\vert \text{answers}\right\rangle  & =W_{pb}\left\vert n_{p}b\right\rangle =\frac{1}{\sqrt{2}}\left(\left\vert 00\right\rangle +\left\vert 11\right\rangle \right)\\
+\left\vert \text{who}\right\rangle  & =\frac{1}{\sqrt{8}}\sum_{ail}\left\vert an_{i}as_{j}s_{j}n_{i}\right\rangle \\
+ & =\frac{1}{\sqrt{8}}\left[\left\vert 000000\right\rangle +\left\vert 000110\right\rangle +\left\vert 010001\right\rangle +\left\vert 010111\right\rangle +\left\vert 101000\right\rangle +\left\vert 101110\right\rangle +\left\vert 111001\right\rangle +\left\vert 111111\right\rangle \right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The circuit that generates both 
+\begin_inset Formula $\left\vert \text{talks}\right\rangle $
+\end_inset
+
+ and 
+\begin_inset Formula $\left\vert \text{answers}\right\rangle $
+\end_inset
+
+ is:
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate{H} & 
+\backslash
+ctrl{1} & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw & 
+\backslash
+gate{X} & 
+\backslash
+qw
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\end_inset
+
+The circuit that generates 
+\begin_inset Formula $\left\vert \text{who}\right\rangle $
+\end_inset
+
+ is:
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate{H} & 
+\backslash
+ctrl{2} &      
+\backslash
+qw & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate{H} &      
+\backslash
+qw & 
+\backslash
+ctrl{4} & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw & 
+\backslash
+gate{X} &      
+\backslash
+qw & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate{H} & 
+\backslash
+ctrl{1} &      
+\backslash
+qw & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw & 
+\backslash
+gate{X} &      
+\backslash
+qw & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+gate{X} & 
+\backslash
+qw
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Thus, algorithm 
+\begin_inset Formula ${\cal A}$
+\end_inset
+
+ in this case is:
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$1  
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate{H} & 
+\backslash
+ctrl{2} &              
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+ctrl{9} & 
+\backslash
+gate{H} & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$2  
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate{H} &      
+\backslash
+qw &         
+\backslash
+ctrl{4} &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+ctrl{7} & 
+\backslash
+gate{H} &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$3  
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw & 
+\backslash
+gate{X} &              
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$4  
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate{H} & 
+\backslash
+ctrl{1} &              
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$5  
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw & 
+\backslash
+gate{X} &              
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+ctrl{3} & 
+\backslash
+gate{H} &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$6  
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+gate{X}
+\backslash
+slice{} & 
+\backslash
+ctrl{1} & 
+\backslash
+gate{H} &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$7  
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate{H} & 
+\backslash
+ctrl{1} &              
+\backslash
+qw & 
+\backslash
+gate{X} &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$8  
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw & 
+\backslash
+gate{X} &              
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+gate{X} &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$9  
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate{H} & 
+\backslash
+ctrl{1} &              
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+gate{X} &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$10  
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&      
+\backslash
+qw & 
+\backslash
+gate{X} &              
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw & 
+\backslash
+gate{X} &      
+\backslash
+qw & 
+\backslash
+qw
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\end_inset
+
+To the left of the red line, we have the initialization of 
+\begin_inset Formula $\left\vert \text{who}\right\rangle $
+\end_inset
+
+ in wires 1-6, 
+\begin_inset Formula $\left\vert \text{talks}\right\rangle $
+\end_inset
+
+ in wires 7-8 and 
+\begin_inset Formula $\left\vert \text{talks}\right\rangle $
+\end_inset
+
+ in wires 9-10.
+ To the right of the red line, we have the contraction algorithm, which
+ hold the right contraction in all states of the form 
+\begin_inset Formula $\left\vert 00..000000\right\rangle $
+\end_inset
+
+, where qubits that have the dot 
+\begin_inset Quotes bld
+\end_inset
+
+.
+\begin_inset Quotes brd
+\end_inset
+
+ can have any value (and in this case will hold the right contraction).
+\end_layout
+
+\begin_layout Standard
+In the context of the amplification algorithm, the basis states that are
+ allowed to be in the linear superposition 
+\begin_inset Formula $\left\vert \psi_{1}\right\rangle $
+\end_inset
+
+ are of the form 
+\begin_inset Formula $\left\vert 00.1000000\right\rangle $
+\end_inset
+
+, because not only we are only interested in the components that have the
+ right contraction (
+\begin_inset Formula $\left\vert 00..000000\right\rangle $
+\end_inset
+
+) but we are also interested in keeping the correct answer to the question
+ 
+\emph on
+
+\begin_inset Quotes bld
+\end_inset
+
+who talks?
+\begin_inset Quotes brd
+\end_inset
+
+
+\emph default
+, which means that we also want the qubit in wire 4 to have value of 1.
+ Thus, our oracle operator looks like this:
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$1$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+octrl{1} & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$2$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+octrl{2} & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$3$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&       
+\backslash
+qw & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$4$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&  
+\backslash
+ctrl{1} & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$5$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+octrl{1} & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$6$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+octrl{1} & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$7$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+octrl{1} & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$8$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+octrl{1} & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$9$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+octrl{1} & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$10$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+octrl{1} & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$11$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&  
+\backslash
+gate{X} & 
+\backslash
+qw
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\end_inset
+
+where the qubit in wire 11 is initially prepared in the 
+\begin_inset Formula $\left\vert -\right\rangle =\frac{\left\vert 0\right\rangle -\left\vert 1\right\rangle }{\sqrt{2}}$
+\end_inset
+
+ state.
+ To make everything clear, this is the first iteration of the algorithm:
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$1  
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	& 
+\backslash
+gate[wires=10]{
+\backslash
+mathcal{A}}
+\backslash
+slice{} & 
+\backslash
+octrl{1} & 
+\backslash
+gate[wires=10]{
+\backslash
+mathcal{A}^{
+\backslash
+dagger}} & 
+\backslash
+gate{X} &      
+\backslash
+qw & 
+\backslash
+ctrl{1} &      
+\backslash
+qw & 
+\backslash
+gate{X} & 
+\backslash
+gate[wires=10]{
+\backslash
+mathcal{A}}
+\backslash
+slice{} & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$2  
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&                                 
+\backslash
+qw & 
+\backslash
+octrl{2} &                                   
+\backslash
+qw & 
+\backslash
+gate{X} &      
+\backslash
+qw & 
+\backslash
+ctrl{1} &      
+\backslash
+qw & 
+\backslash
+gate{X} &                                 
+\backslash
+qw & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$3  
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&                                 
+\backslash
+qw &       
+\backslash
+qw &                                   
+\backslash
+qw & 
+\backslash
+gate{X} &      
+\backslash
+qw & 
+\backslash
+ctrl{1} &      
+\backslash
+qw & 
+\backslash
+gate{X} &                                 
+\backslash
+qw & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$4  
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&                                 
+\backslash
+qw &  
+\backslash
+ctrl{1} &                                   
+\backslash
+qw & 
+\backslash
+gate{X} &      
+\backslash
+qw & 
+\backslash
+ctrl{1} &      
+\backslash
+qw & 
+\backslash
+gate{X} &                                 
+\backslash
+qw & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$5  
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&                                 
+\backslash
+qw & 
+\backslash
+octrl{1} &                                   
+\backslash
+qw & 
+\backslash
+gate{X} &      
+\backslash
+qw & 
+\backslash
+ctrl{1} &      
+\backslash
+qw & 
+\backslash
+gate{X} &                                 
+\backslash
+qw & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$6  
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&                                 
+\backslash
+qw & 
+\backslash
+octrl{1} &                                   
+\backslash
+qw & 
+\backslash
+gate{X} &      
+\backslash
+qw & 
+\backslash
+ctrl{1} &      
+\backslash
+qw & 
+\backslash
+gate{X} &                                 
+\backslash
+qw & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$7  
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&                                 
+\backslash
+qw & 
+\backslash
+octrl{1} &                                   
+\backslash
+qw & 
+\backslash
+gate{X} &      
+\backslash
+qw & 
+\backslash
+ctrl{1} &      
+\backslash
+qw & 
+\backslash
+gate{X} &                                 
+\backslash
+qw & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$8  
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&                                 
+\backslash
+qw & 
+\backslash
+octrl{1} &                                   
+\backslash
+qw & 
+\backslash
+gate{X} &      
+\backslash
+qw & 
+\backslash
+ctrl{1} &      
+\backslash
+qw & 
+\backslash
+gate{X} &                                 
+\backslash
+qw & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$9  
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&                                 
+\backslash
+qw & 
+\backslash
+octrl{1} &                                   
+\backslash
+qw & 
+\backslash
+gate{X} &      
+\backslash
+qw & 
+\backslash
+ctrl{1} &      
+\backslash
+qw & 
+\backslash
+gate{X} &                                 
+\backslash
+qw & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$10  
+\backslash
+ket{0}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&                                 
+\backslash
+qw & 
+\backslash
+octrl{1} &                                   
+\backslash
+qw & 
+\backslash
+gate{X} & 
+\backslash
+gate{H} & 
+\backslash
+gate{X} & 
+\backslash
+gate{H} & 
+\backslash
+gate{X} &                                 
+\backslash
+qw & 
+\backslash
+qw 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+lstick[wires=1]{$11  
+\backslash
+ket{-}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	&                                 
+\backslash
+qw &  
+\backslash
+gate{X} &                                   
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &      
+\backslash
+qw &                                 
+\backslash
+qw & 
+\backslash
+qw
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{quantikz}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Performing the simulation, and plotting the probability of finding a desired
+ state, which is
+\begin_inset Formula 
+\[
+P_{m}=\frac{\left\langle \psi_{1}\right\vert Q^{m}\left\vert \psi\right\rangle }{\left\langle \psi_{1}\vert\psi_{1}\right\rangle }
+\]
+
+\end_inset
+
+and theoretically it should be 
+\begin_inset Formula $\sin^{2}\left(\left(2m+1\right)\theta_{a}\right)$
+\end_inset
+
+, we obtain:
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename /home/hugens/shared/uni/project/qnlp/notebooks/figures/2021-11-30--18:53:20-amplification.png
+	lyxscale 10
+	width 40text%
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename /home/hugens/shared/uni/project/qnlp/notebooks/figures/2021-12-08--12:34:06-amplification.png
+	lyxscale 10
+	width 40text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:amplification-works"
+
+\end_inset
+
+Results of the amplification method in a quantum computer simulator.
+ In this simulation, 
+\begin_inset Formula $N=8192$
+\end_inset
+
+ shots were performed for each of the circuits.
+ In our specific 
+\emph on
+
+\begin_inset Quotes bld
+\end_inset
+
+who talks?
+\begin_inset Quotes brd
+\end_inset
+
+
+\emph default
+ case, the only desired state is 
+\begin_inset Formula $\left\vert 0011000000\right\rangle $
+\end_inset
+
+, whose probability of being measured is in the y-axis.
+ In the left figure, 1 ancillary bit was used for the oracle, whereas in
+ the right figure no ancillary bits where used.
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+We can see that after the predicted number of iterations 
+\begin_inset Formula $m_{floor}=\lfloor\frac{\pi}{4\theta_{a}}\rfloor$
+\end_inset
+
+, the probability of measuring a desired state is very close to 1, i.e.
+ we would measure the qubit 3 to be 1, which is the index of the correct
+ answer 
+\begin_inset Formula $\left\vert \text{dog}\right\rangle $
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+
+\lang english
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+btprint "btPrintAll"
+bibfiles "quantum-nlp"
+options "plain"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
